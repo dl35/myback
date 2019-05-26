@@ -1,0 +1,17 @@
+RewriteEngine On
+
+RewriteRule ^api/public/([^/.]+)$ api/public/routes.php?products=$1 [L]
+RewriteRule ^api/public/([^/.]+)/([^/.]+)$ api/public/routes.php?products=$1&id=$2 [L]
+RewriteRule ^api/public/([^/.]+)/([^/.]+)/([^/.]+)$ api/public/routes.php?products=$1&id=$2&other=$3
+
+
+
+RewriteRule ^api/private/signup$ api/private/authentification.php [L]
+RewriteRule ^api/private/([^/.]+)$ api/private/routes.php?products=$1 [L]
+RewriteRule ^api/private/([^/.]+)/([^/.]+)$ api/private/routes.php?products=$1&id=$2 [L]
+RewriteRule ^api/private/([^/.]+)/([^/.]+)/([^/.]+)$ api/private/routes.php?products=$1&id=$2&other=$3 [L]
+
+
+#Sets the HTTP_AUTHORIZATION header removed by apache
+RewriteCond %{HTTP:Authorization} .
+RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
