@@ -1,0 +1,58 @@
+version: "3"
+services:
+  php:
+    build: './php/'
+    networks:
+      - backend
+    volumes:
+      - ../web/:/var/www/html/ 
+      - ./php/ssmtp/ssmtp.conf:/etc/ssmtp/ssmtp.conf:ro
+      - ./php/mail/mail.ini:/usr/local/etc/php/conf.d/mail.ini:ro
+  apache:
+    build: './apache/'
+    depends_on:
+      - php
+      - mysql
+    networks:
+      - frontend
+      - backend
+    ports:
+      - "2600:80"
+    volumes:
+      - ../web/:/var/www/html/
+  mysql:
+    image: mysql:5.6.40
+    
+    networks:
+      - backend
+    environment:
+         MYSQL_DATABASE: myecn
+         MYSQL_USER: ecn
+         MYSQL_PASSWORD: ecn
+         MYSQL_ROOT_PASSWORD: ecn
+    volumes:
+      - ./database:/var/lib/mysql
+
+  phpmyadmin:
+    image: phpmyadmin/phpmyadmin
+    networks:
+      - backend
+    ports:
+      - 2800:80
+    environment:
+        MYSQL_USER: ecn
+        MYSQL_PASSWORD: ecn
+        MYSQL_ROOT_PASSWORD: ecn
+        PMA_HOST: mysql
+    networks:
+      - backend         
+    links: 
+      - mysql:mysql
+
+networks:
+  frontend:
+  backend:
+
+volumes:
+  database:
+    driver: local
