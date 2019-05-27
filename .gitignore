@@ -1,0 +1,11 @@
+
+docker/database
+docker/mysql
+
+web/api/common
+
+web/api/private/routes.php
+web/api/private/jwt.php
+web/api/private/authentification.php
+
+web/api/public/routes.php
