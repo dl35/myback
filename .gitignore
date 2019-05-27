@@ -2,6 +2,7 @@
 docker/database
 docker/mysql
 
+web/.htaccess
 web/api/common
 
 web/api/private/routes.php
