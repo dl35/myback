@@ -1,6 +1,5 @@
 <?php
 
-
 switch ($method) {
 	case 'GET':
 		if ( isset($id) ) {
