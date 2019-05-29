@@ -295,8 +295,8 @@ function add($data) {
 	
 	$id = $mysqli->insert_id ;
 	
-	return get( $id );
-	
+	setSuccess('ajout valide');
+
 	
 }
 
@@ -446,7 +446,7 @@ function update($id ,$data) {
 	
 	$stmt->close();
 	
-	return get($id);
+	setSuccess('modif valide');
 	
 	
 }
