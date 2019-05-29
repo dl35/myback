@@ -53,16 +53,15 @@ switch ($method) {
 		break;
 
 	case 'DELETE':
-		if ( !isset($_GET["id"]) ) {
-			$err="invalid request delete id ";
-			setError($err );
-			break;
-		}
-		delete($_GET["id"] );
-		break;
-
-
-		
+				if ( !isset($id) ) {
+					$err="invalid request ";
+					setError($err );
+					break;
+				}
+				$id =  str_replace("all_", "", $id , $count);
+		    ( $count > 0 ) ?	deleteAll( $id ) : delete( $id );
+				break;
+	
 	default:
 		$err="invalid request global";
 		setError($err );
@@ -617,7 +616,7 @@ function update( $id  , $data )
 			return ;
 		}
 		
-		setSuccess( $query );
+		setSuccess( "Extranat" );
 		return;
 	}
 	
@@ -1051,13 +1050,49 @@ function delete( $ide ) {
 		}
 		
 	
-	$message="Supression" ;
+	$mysqli->close();
+
+	$message="Supression";
 	setSuccess($message);
 	return;
 	
 	
 	
 }
+
+
+/**
+ * supression d'un ou de tous les engagements
+ */
+function deleteAll($idc) {
+	global $dev,$mysqli;
+	global $tengagements,$tengage_date ;
+	
+	
+	$query= "DELETE $tengagements, $tengage_date FROM $tengagements,$tengage_date WHERE $tengagements.notification = 0 AND $tengagements.id_competitions=$idc AND  $tengage_date.id_engage=$tengagements.id" ;
+	
+	
+	$result = $mysqli->query( $query ) ;
+		if (!$result) {
+			($dev) ? $err=$mysqli->error." ".$query : $err="query invalid";
+			setError( $err );
+			return ;
+		}
+		
+	
+	$nb = $mysqli->affected_rows;
+	$mysqli->close();
+	
+	$message="Supression: ".$nb ;
+	setSuccess($message);
+	return;
+	
+	
+	
+}
+
+
+
 
 
 
