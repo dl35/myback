@@ -295,8 +295,7 @@ function add($data) {
 	
 	$id = $mysqli->insert_id ;
 	
-	setSuccess('ajout valide');
-
+  return get( $id ) ;
 	
 }
 
