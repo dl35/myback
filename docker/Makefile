@@ -3,7 +3,8 @@ build:
 
 clean: 
 	docker-compose down --rmi local
-
+down:
+	docker-compose down
 
 up:
 	docker-compose up 
