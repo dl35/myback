@@ -37,7 +37,10 @@ function updateEngagement ($ide, $idl, $data) {
 	global $dev,$mysqli;
 	global $tengagements,$tengage_date;
 	
-	
+	if ( isset($data->commentaire) ) { $comment =  utf8_decode($data->commentaire  ); }
+    else { $comment =NULL ; }
+
+
 	foreach ($data as $id => $response ) {
 		$query = "UPDATE $tengage_date SET presence = ?  WHERE id = ?  ";
 		
@@ -64,9 +67,11 @@ function updateEngagement ($ide, $idl, $data) {
 	}
 	
 	$params=array();
-	$query = "UPDATE $tengagements SET date_reponse = NOW()  WHERE id = ? AND id_licencies = ? ";
-	$params[]=$ide;
+	$query = "UPDATE $tengagements SET date_reponse = NOW() ,commentaire = ?  WHERE id = ? AND id_licencies = ? ";
+	$params[]=$comment;
 	$start="s";
+	$params[]=$ide;
+	$start.="s";
 	$params[]=$idl;
 	$start.="s";
 	$stmt = $mysqli->prepare( $query );

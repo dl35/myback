@@ -439,7 +439,7 @@ function getEngagements($id) {
 	global $dev,$mysqli;
 	
 	
-	$query="SELECT engage_date.comment,engage_date.date,engage_date.id as edid ,$tengagements.id,$tengagements.id_licencies,$tengagements.id_competitions,$tengagements.extranat,$tlicencies.nom,$tlicencies.prenom,$tlicencies.categorie,$tlicencies.sexe,$tlicencies.rang,$tengagements.notification,$tengage_date.presence ".
+	$query="SELECT $tengagements.commentaire,engage_date.date,engage_date.id as edid ,$tengagements.id,$tengagements.id_licencies,$tengagements.id_competitions,$tengagements.extranat,$tlicencies.nom,$tlicencies.prenom,$tlicencies.categorie,$tlicencies.sexe,$tlicencies.rang,$tengagements.notification,$tengage_date.presence ".
 			" FROM $tlicencies,$tengagements,$tengage_date ".
 			" WHERE  $tengagements.id_competitions = $id  ".
 			" AND  $tlicencies.id=$tengagements.id_licencies ".
@@ -460,7 +460,7 @@ function getEngagements($id) {
 	$last="";
 	while($r = $result->fetch_assoc() ) {
 		//unset( $r['commentaires'] ) ;
-		$r['comment']=utf8_encode($r['comment'] );
+		$r['commentaire']=utf8_encode($r['commentaire'] );
 		$r['nom']=utf8_encode($r['nom'] );
 		$r['prenom']=utf8_encode($r['prenom'] );
 		
