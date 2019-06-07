@@ -118,8 +118,10 @@ function validateObject($json) {
 		
 	}
 	
-	
-	
+	$json->nom = utf8_decode( $json->nom );
+	$json->lieu = utf8_decode( $json->lieu );
+	$json->commentaires = utf8_decode( $json->commentaires );
+	$json->lien = utf8_decode( $json->lien );
 	
 	return true ;
 	
@@ -165,12 +167,12 @@ function add($data) {
 	//$values.=$cat;
     
 	$set = "nom" ;
-	$params[] = ucfirst( strtolower( utf8_decode($data->nom)   )  );
+	$params[] = ucfirst( strtolower( $data->nom   )  );
 	$start = "s";
 	$inc = "?";
 	
 	$set .= ",lieu" ;
-	$params[]= ucfirst( strtolower( utf8_decode($data->lieu)  ) ) ;
+	$params[]= ucfirst( strtolower( $data->lieu  ) ) ;
 	$start .= "s";
 	$inc .= ",?";
 			
@@ -228,7 +230,7 @@ function add($data) {
 	if(  isset($data->lien ) &&  !empty($data->lien))
 	{
 		$set.=",lien";
-		$params[] = $data->lien ;
+		$params[] =  $data->lien ;
 		$inc.=",?";
 		$start.="s";
 	}
@@ -239,7 +241,7 @@ function add($data) {
 		
 		
 		$set.=",commentaires";
-		$params[] = $data->commentaires ;
+		$params[] =  $data->commentaires  ;
 		$inc.=",?";
 		$start.="s";
 	}
@@ -321,12 +323,12 @@ function update($id ,$data) {
 	//$values.=$cat;
 	
 	$set = "nom=?" ;
-	$params[] = ucfirst( strtolower( utf8_decode( $data->nom ) )  );
+	$params[] = ucfirst( strtolower(  $data->nom  )  );
 	$start = "s";
 	
 	
 	$set .= ",lieu=?" ;
-	$params[]= ucfirst( strtolower( utf8_decode( $data->lieu ) ) );
+	$params[]= ucfirst( strtolower(  $data->lieu  ) );
 	$start .= "s";
 	
 	
@@ -519,6 +521,14 @@ function get( $id ) {
 		$datetime = new DateTime($r['limite'] .' 00:00:00');
 		$r['limite']=$datetime->format(DateTime::ATOM);
 		
+		$r['nom'] = utf8_encode( $r['nom'] ) ;
+		$r['lieu'] = utf8_encode( $r['lieu'] ) ;
+
+		$r['lien'] = utf8_encode( $r['lien'] ) ;
+		$r['commentaires'] = utf8_encode( $r['commentaires'] ) ;
+
+
+
 	    $mysqli->close();
 		header("Content-type:application/json");
 		$datas['datas']=$r;
@@ -645,6 +655,9 @@ function getCompetitions() {
 		
 		$r['nom'] = utf8_encode( $r['nom'] ) ;
 		$r['lieu'] = utf8_encode( $r['lieu'] ) ;
+		$r['lien'] = utf8_encode( $r['lien'] ) ;
+		$r['commentaires'] = utf8_encode( $r['commentaires'] ) ;
+
 
 		$e = json_encode( $r ) ;
 		if ( $e != false  ) 	
