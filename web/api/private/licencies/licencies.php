@@ -1,4 +1,6 @@
 <?php
+include  '../common/fonctions_categories.php' ;
+
 
 $auth= array("admin","ecn");
 
@@ -109,8 +111,8 @@ function validateObject($json) {
 	if ( ! array_key_exists('telephone3', $json) ) return false ;
 	
 	
-	$d= new DateTime( $json->date );
-	$df=$d->format('Y-m-d');
+	$d = new DateTime( $json->date );
+	$df =$d->format('Y-m-d');
 	$json->date =$df;
 	
 	return true;
@@ -146,12 +148,15 @@ function get($id=false) {
 	while($r = $result->fetch_assoc() ) {
 		
 		
-		$r['nom']=utf8_encode($r['nom'] );
-		$r['prenom']=utf8_encode($r['prenom'] );
+		$r['nom']=utf8_encode( ucfirst( strtolower($r['nom']) ) );
+		$r['prenom']=utf8_encode(ucfirst( strtolower($r['prenom'] ) ) );
 		$r['adresse']=utf8_encode($r['adresse'] );
 		$r['ville']=utf8_encode($r['ville'] );
 		$r['commentaires']=utf8_encode($r['commentaires'] );
 		
+		$r['carte']=utf8_encode($r['carte'] );
+
+
 		$ttel=explode(",",$r['telephone'] );
 		$temail=explode(",",$r['email'] );
 		
@@ -173,7 +178,7 @@ function get($id=false) {
 		($r['fiche_medicale'] == '1' ) ? $r['fiche_medicale'] =true  : $r['fiche_medicale'] =false ;
 		($r['photo'] == '1' ) ? $r['photo'] =true  : $r['photo'] =false ;
 		($r['reglement'] == '1' ) ? $r['reglement'] =true  : $r['reglement'] =false ;
-		
+		($r['valide'] == '1' ) ? $r['valide'] =true  : $r['valide'] =false ;
 		
 		($r['paye'] == '1' ) ? $r['paye'] =true  : $r['paye'] =false ;
 		
@@ -227,8 +232,11 @@ function add($data) {
 	$adresse = utf8_decode($data->adresse);
 	$ville = utf8_decode($data->ville);
 	
-	$set="(nom,prenom,date,sexe,adresse,code_postal,ville" ;
-	$values="('$nom','$prenom','$data->date','$data->sexe','$adresse','$data->code_postal','$ville'";
+	$cat = CategorieFromDate( $data->date , $data->sexe ) ;
+	$rang = RangFromDate( $data->date , $data->sexe );
+
+	$set="(id,nom,prenom,date,sexe,adresse,code_postal,ville,categorie,rang,type" ;
+	$values="('$idlic','$nom','$prenom','$data->date','$data->sexe','$adresse','$data->code_postal','$ville','$cat','$rang','N'";
 	
 	$set.=",email";
 	$v="";
@@ -274,187 +282,10 @@ function add($data) {
 	}
 	
 	$values.=",'$v'";
-	
-	
-	
-	if (isset($data->type) )
-	{
-		$set.=",type";
-		$values.=",'$data->type'";
-	}
-	
-	if (isset($data->categorie) )
-	{
-		$set.=",categorie";
-		$values.=",'$data->categorie'";
-	}
-	if (isset($data->rang) )
-	{
-		$set.=",rang";
-		$values.=",'$data->rang'";
-	}
-	
-	if (isset($data->officiel) )
-	{
-		$set.=",officiel";
-		$values.=",'$data->officiel'";
-	}
-	
-	if (isset($data->licence) )
-	{
-		$set.=",licence";
-		$values.=",'$data->licence'";
-	}
-	
-	if (isset($data->entr) )
-	{
-		$set.=",entr";
-		( $data->entr ) ?   $v="1"  :  $v="0" ;
-		$values.=",'$v'";
-	}
-	
-	if (isset($data->banque) )
-	{
-		$set.=",banque";
-		$values.=",'$data->banque'";
-	}
-	
-	if (isset($data->cheque1) )
-	{
-		$set.=",cheque1";
-		$values.=",'$data->cheque1'";
-	}
-	if (isset($data->cheque2) )
-	{
-		$set.=",cheque2";
-		$values.=",'$data->cheque2'";
-	}
-	if (isset($data->cheque3) )
-	{
-		$set.=",cheque3";
-		$values.=",'$data->cheque3'";
-	}
-	
-	
-	if (isset($data->num_cheque1) )
-	{
-		$set.=",num_cheque1";
-		$values.=",'$data->num_cheque1'";
-	}
-	if (isset($data->num_cheque2) )
-	{
-		$set.=",num_cheque2";
-		$values.=",'$data->num_cheque2'";
-	}
-	if (isset($data->num_cheque3) )
-	{
-		$set.=",num_cheque3";
-		$values.=",'$data->num_cheque3'";
-	}
-	
-	
-	if (isset($data->ch_sport) )
-	{
-		$set.=",ch_sport";
-		$values.=",'$data->ch_sport'";
-	}
-	if (isset($data->num_sport) )
-	{
-		$set.=",num_sport";
-		$values.=",'$data->num_sport'";
-	}
-	
-	
-	if (isset($data->coup_sport) )
-	{
-		$set.=",coup_sport";
-		$values.=",'$data->coup_sport'";
-	}
-	if (isset($data->num_coupsport) )
-	{
-		$set.=",num_coupsport";
-		$values.=",'$data->num_coupsport'";
-	}
-	
-	
-	
-	if (isset($data->nbre_chvac10) )
-	{
-		$set.=",nbre_chvac10";
-		$values.=",'$data->nbre_chvac10'";
-	}
-	
-	
-	if (isset($data->nbre_chvac20) )
-	{
-		$set.=",nbre_chvac20";
-		$values.=",'$data->nbre_chvac20'";
-	}
-	
-	if (isset($data->especes) )
-	{
-		$set.=",especes";
-		$values.=",'$data->especes'";
-	}
-	
-	
-	
-	if (isset($data->cert_medical) )
-	{
-		$set.=",cert_medical";
-		( $data->cert_medical ) ?   $v="1"  :  $v="0" ;
-		$values.=",'$v'";
-	}
-	
-	if (isset($data->auto_parentale) )
-	{
-		$set.=",auto_parentale";
-		( $data->auto_parentale ) ?   $v="1"  :  $v="0" ;
-		$values.=",'$v'";
-	}
-	
-	
-	if (isset($data->fiche_medicale) )
-	{
-		$set.=",fiche_medicale";
-		( $data->fiche_medicale ) ?   $v="1"  :  $v="0" ;
-		$values.=",'$v'";
-	}
-	
-	
-	if (isset($data->photo) )
-	{
-		$set.=",photo";
-		( $data->photo ) ?   $v="1"  :  $v="0" ;
-		$values.=",'$v'";
-	}
-	
-	
-	if (isset($data->reglement) )
-	{
-		$set.=",reglement";
-		( $data->reglement ) ?   $v="1"  :  $v="0" ;
-		$values.=",'$v'";
-	}
-	
-	if (isset($data->paye) )
-	{
-		$set.=",paye";
-		( $data->paye ) ?   $v="1"  :  $v="0" ;
-		$values.=",'$v'";
-	}
-	
-	if (isset($data->commentaires) )
-	{
-		$set.=",commentaires";
-		$values.=",'".utf8_decode($data->commentaires)."'";
-	}
-	
-	
-	
+
 	$set.=") ";
 	$values.=") ";
-	$query=" INSERT INTO  $tlicencies  $set  VALUES  $values ";
+	$query =" INSERT INTO  $tlicencies  $set  VALUES  $values ";
 	
 	$result = $mysqli->query( $query ) ;
 	if (!$result ) {
@@ -526,12 +357,26 @@ function update($data) {
 	(isset($data->entr)  &&  $data->entr ) ?   $set.=",entr= '1' "  :  $set.=",entr= '0' " ;
 	
 	
+	( isset($data->cotisation) ) ?  $set.=",cotisation ='$data->cotisation' "  :  $set.=",cotisation = NULL " ;
+
+	
+	( isset($data->carte) ) ?  $set.=",carte ='".utf8_decode($data->carte)."' "  :  $set.=",carte = NULL " ;
+	( isset($data->num_carte) ) ?  $set.=",num_carte ='".utf8_decode($data->num_carte)."' "  :  $set.=",num_carte = NULL " ;
+
+
 	( isset($data->banque) ) ?  $set.=",banque ='$data->banque' "  :  $set.=",banque = NULL " ;
 	
 	( isset($data->cheque1) ) ?  $set.=",cheque1 ='$data->cheque1' "  :  $set.=",cheque1 = NULL " ;
 	( isset($data->cheque2) ) ?  $set.=",cheque2 ='$data->cheque2' "  :  $set.=",cheque2 = NULL " ;
 	( isset($data->cheque3) ) ?  $set.=",cheque3 ='$data->cheque3' "  :  $set.=",cheque3 = NULL " ;
 	
+	$total = 0 ;
+
+	if ( isset($data->cheque1) ) { $total = $total + $data->cheque1 ;}
+	if ( isset($data->cheque2) ) { $total = $total + $data->cheque2 ;}
+	if ( isset($data->cheque3) ) { $total = $total + $data->cheque3 ;}
+	
+
 	( isset($data->num_cheque1) ) ?  $set.=",num_cheque1 ='$data->num_cheque1' "  :  $set.=",num_cheque1 = NULL " ;
 	( isset($data->num_cheque2) ) ?  $set.=",num_cheque2 ='$data->num_cheque2' "  :  $set.=",num_cheque2 = NULL " ;
 	( isset($data->num_cheque3) ) ?  $set.=",num_cheque3 ='$data->num_cheque3' "  :  $set.=",num_cheque3 = NULL " ;
@@ -550,7 +395,13 @@ function update($data) {
 	( isset($data->nbre_chvac20) ) ?  $set.=",nbre_chvac20 ='$data->nbre_chvac20' "  :  $set.=",nbre_chvac20 = NULL " ;
 	( isset($data->especes) ) ?  $set.=",especes ='$data->especes' "  :  $set.=",especes = NULL " ;
 	
-	
+	if ( isset($data->ch_sport) ) { $total = $total + $data->ch_sport ; }
+	if ( isset($data->coup_sport) ) { $total = $total + $data->coup_sport ; }
+	if ( isset($data->nbre_chvac10) ) { $total = $total + $data->nbre_chvac10 *10 ; }
+	if ( isset($data->nbre_chvac20) ) { $total = $total + $data->nbre_chvac20 *20 ; }
+	if ( isset($data->especes) ) { $total = $total + $data->especes ; }
+
+	$set.=",total= '$total' ";
 	
 	
 	(isset($data->cert_medical)  &&  $data->cert_medical ) ?   $set.=",cert_medical= '1' "  :  $set.=",cert_medical= '0' " ;
@@ -615,16 +466,14 @@ function update($data) {
 function delete($id) {
 	global $dev,$mysqli;
 	global $tlicencies;
-	
-
-/*	$query = "DELETE FROM  $tlicencies WHERE id = '$id' ";
+	$query = "DELETE FROM  $tlicencies WHERE id = '$id' ";
 	$result = $mysqli->query( $query ) ;
 	if (!$result ) {
 		($dev) ? $err=$mysqli->connect_error: $err="invalid query";
 		setError( $err );
 		return ;
 		
-	}*/
+	}
 	header("X-Message: modification ok",true);
 	setSuccess("Suppression ok");
 }
@@ -640,14 +489,14 @@ function send_attestation ( $data) {
 	
 	$nom = $data->nom;
 	$prenom = $data->prenom;
-	$tarif = $data->tarif;
+	$cotisation = $data->cotisation;
 	$date = $data->date;
 	
 	if( $dev ) $to=$dev_email;
 	
 	$to="denis.lesech@gmail.com";
 	
-	$pdf=doPdf($nom,$prenom,$date,$tarif,$saison_enc);
+	$pdf=doPdf($nom,$prenom,$date,$cotisation,$saison_enc);
 	$pdf->setCompression(true);
 	
 	
