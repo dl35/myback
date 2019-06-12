@@ -92,6 +92,8 @@ function get() {
 			continue ;
 		}
 		
+		$r['categorie'] = strtolower( $r['categorie'] );
+
 		$e = json_encode( $r ) ;
 		if ( $e !== false  )
 		{
