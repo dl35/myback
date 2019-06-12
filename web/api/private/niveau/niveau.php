@@ -80,8 +80,8 @@ function get() {
 	while($r = $result->fetch_assoc() ) {
 		
 		
-		$r['nom']=utf8_encode($r['nom'] );
-		$r['prenom']=utf8_encode($r['prenom'] );
+		$r['nom']=utf8_encode(  ucfirst( strtolower( $r['nom']  ) ) );
+		$r['prenom']=utf8_encode( ucfirst( strtolower( $r['prenom'] ) ) );
 		
 		
 		if ( strlen( $r['niveau'] ) === 0 ) {

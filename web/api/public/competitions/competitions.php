@@ -145,7 +145,7 @@ function getEngagements($id) {
 
 
 		
-	$query="SELECT engage_date.comment,engage_date.date,engage_date.id as edid ,$tengagements.id_licencies,$tengagements.id_competitions,$tlicencies.nom,$tlicencies.prenom,$tlicencies.categorie,$tlicencies.sexe,$tlicencies.rang,$tengage_date.presence ".
+	$query="SELECT engage_date.date,engage_date.id as edid ,$tengagements.id_licencies,$tengagements.id_competitions,$tlicencies.nom,$tlicencies.prenom,$tlicencies.categorie,$tlicencies.sexe,$tlicencies.rang,$tengage_date.presence ".
 			" FROM $tlicencies,$tengagements,$tengage_date ".
 			" WHERE  $tengagements.id_competitions = $id  ".
 			" AND  $tlicencies.id=$tengagements.id_licencies ".

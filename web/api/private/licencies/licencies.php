@@ -109,8 +109,8 @@ function validateObject($json) {
 	if ( ! array_key_exists('telephone3', $json) ) return false ;
 	
 	
-	$d= new DateTime( $json->date );
-	$df=$d->format('Y-m-d');
+	$d = new DateTime( $json->date );
+	$df =$d->format('Y-m-d');
 	$json->date =$df;
 	
 	return true;
@@ -146,8 +146,8 @@ function get($id=false) {
 	while($r = $result->fetch_assoc() ) {
 		
 		
-		$r['nom']=utf8_encode($r['nom'] );
-		$r['prenom']=utf8_encode($r['prenom'] );
+		$r['nom']=utf8_encode( ucfirst( strtolower($r['nom']) ) );
+		$r['prenom']=utf8_encode(ucfirst( strtolower($r['prenom'] ) ) );
 		$r['adresse']=utf8_encode($r['adresse'] );
 		$r['ville']=utf8_encode($r['ville'] );
 		$r['commentaires']=utf8_encode($r['commentaires'] );
@@ -173,7 +173,7 @@ function get($id=false) {
 		($r['fiche_medicale'] == '1' ) ? $r['fiche_medicale'] =true  : $r['fiche_medicale'] =false ;
 		($r['photo'] == '1' ) ? $r['photo'] =true  : $r['photo'] =false ;
 		($r['reglement'] == '1' ) ? $r['reglement'] =true  : $r['reglement'] =false ;
-		
+		($r['valide'] == '1' ) ? $r['valide'] =true  : $r['valide'] =false ;
 		
 		($r['paye'] == '1' ) ? $r['paye'] =true  : $r['paye'] =false ;
 		
@@ -227,8 +227,8 @@ function add($data) {
 	$adresse = utf8_decode($data->adresse);
 	$ville = utf8_decode($data->ville);
 	
-	$set="(nom,prenom,date,sexe,adresse,code_postal,ville" ;
-	$values="('$nom','$prenom','$data->date','$data->sexe','$adresse','$data->code_postal','$ville'";
+	$set="(id,nom,prenom,date,sexe,adresse,code_postal,ville" ;
+	$values="('$idlic','$nom','$prenom','$data->date','$data->sexe','$adresse','$data->code_postal','$ville'";
 	
 	$set.=",email";
 	$v="";
@@ -305,7 +305,11 @@ function add($data) {
 		$set.=",licence";
 		$values.=",'$data->licence'";
 	}
-	
+	if (isset($data->cotisation) )
+	{
+		$set.=",cotisation";
+		$values.=",'$data->cotisation'";
+	}
 	if (isset($data->entr) )
 	{
 		$set.=",entr";
@@ -454,8 +458,10 @@ function add($data) {
 	
 	$set.=") ";
 	$values.=") ";
-	$query=" INSERT INTO  $tlicencies  $set  VALUES  $values ";
+	$query =" INSERT INTO  $tlicencies  $set  VALUES  $values ";
 	
+echo $query ;
+
 	$result = $mysqli->query( $query ) ;
 	if (!$result ) {
 		($dev) ? $err=$mysqli->connect_error: $err="invalid query";
@@ -526,12 +532,22 @@ function update($data) {
 	(isset($data->entr)  &&  $data->entr ) ?   $set.=",entr= '1' "  :  $set.=",entr= '0' " ;
 	
 	
+	( isset($data->cotisation) ) ?  $set.=",cotisation ='$data->cotisation' "  :  $set.=",cotisation = NULL " ;
+
+
 	( isset($data->banque) ) ?  $set.=",banque ='$data->banque' "  :  $set.=",banque = NULL " ;
 	
 	( isset($data->cheque1) ) ?  $set.=",cheque1 ='$data->cheque1' "  :  $set.=",cheque1 = NULL " ;
 	( isset($data->cheque2) ) ?  $set.=",cheque2 ='$data->cheque2' "  :  $set.=",cheque2 = NULL " ;
 	( isset($data->cheque3) ) ?  $set.=",cheque3 ='$data->cheque3' "  :  $set.=",cheque3 = NULL " ;
 	
+	$total = 0 ;
+
+	if ( isset($data->cheque1) ) { $total = $total + $data->cheque1 ;}
+	if ( isset($data->cheque2) ) { $total = $total + $data->cheque2 ;}
+	if ( isset($data->cheque3) ) { $total = $total + $data->cheque3 ;}
+	
+
 	( isset($data->num_cheque1) ) ?  $set.=",num_cheque1 ='$data->num_cheque1' "  :  $set.=",num_cheque1 = NULL " ;
 	( isset($data->num_cheque2) ) ?  $set.=",num_cheque2 ='$data->num_cheque2' "  :  $set.=",num_cheque2 = NULL " ;
 	( isset($data->num_cheque3) ) ?  $set.=",num_cheque3 ='$data->num_cheque3' "  :  $set.=",num_cheque3 = NULL " ;
@@ -550,7 +566,13 @@ function update($data) {
 	( isset($data->nbre_chvac20) ) ?  $set.=",nbre_chvac20 ='$data->nbre_chvac20' "  :  $set.=",nbre_chvac20 = NULL " ;
 	( isset($data->especes) ) ?  $set.=",especes ='$data->especes' "  :  $set.=",especes = NULL " ;
 	
-	
+	if ( isset($data->ch_sport) ) { $total = $total + $data->ch_sport ; }
+	if ( isset($data->coup_sport) ) { $total = $total + $data->coup_sport ; }
+	if ( isset($data->nbre_chvac10) ) { $total = $total + $data->nbre_chvac10 *10 ; }
+	if ( isset($data->nbre_chvac20) ) { $total = $total + $data->nbre_chvac20 *20 ; }
+	if ( isset($data->especes) ) { $total = $total + $data->especes ; }
+
+	$set.=",total= '$total' ";
 	
 	
 	(isset($data->cert_medical)  &&  $data->cert_medical ) ?   $set.=",cert_medical= '1' "  :  $set.=",cert_medical= '0' " ;
@@ -640,14 +662,14 @@ function send_attestation ( $data) {
 	
 	$nom = $data->nom;
 	$prenom = $data->prenom;
-	$tarif = $data->tarif;
+	$cotisation = $data->cotisation;
 	$date = $data->date;
 	
 	if( $dev ) $to=$dev_email;
 	
 	$to="denis.lesech@gmail.com";
 	
-	$pdf=doPdf($nom,$prenom,$date,$tarif,$saison_enc);
+	$pdf=doPdf($nom,$prenom,$date,$cotisation,$saison_enc);
 	$pdf->setCompression(true);
 	
 	
