@@ -1,4 +1,6 @@
 <?php
+include  '../common/fonctions_categories.php' ;
+
 
 $auth= array("admin","ecn");
 
@@ -152,6 +154,9 @@ function get($id=false) {
 		$r['ville']=utf8_encode($r['ville'] );
 		$r['commentaires']=utf8_encode($r['commentaires'] );
 		
+		$r['carte']=utf8_encode($r['carte'] );
+
+
 		$ttel=explode(",",$r['telephone'] );
 		$temail=explode(",",$r['email'] );
 		
@@ -227,8 +232,11 @@ function add($data) {
 	$adresse = utf8_decode($data->adresse);
 	$ville = utf8_decode($data->ville);
 	
-	$set="(id,nom,prenom,date,sexe,adresse,code_postal,ville" ;
-	$values="('$idlic','$nom','$prenom','$data->date','$data->sexe','$adresse','$data->code_postal','$ville'";
+	$cat = CategorieFromDate( $data->date , $data->sexe ) ;
+	$rang = RangFromDate( $data->date , $data->sexe );
+
+	$set="(id,nom,prenom,date,sexe,adresse,code_postal,ville,categorie,rang,type" ;
+	$values="('$idlic','$nom','$prenom','$data->date','$data->sexe','$adresse','$data->code_postal','$ville','$cat','$rang','N'";
 	
 	$set.=",email";
 	$v="";
@@ -274,194 +282,11 @@ function add($data) {
 	}
 	
 	$values.=",'$v'";
-	
-	
-	
-	if (isset($data->type) )
-	{
-		$set.=",type";
-		$values.=",'$data->type'";
-	}
-	
-	if (isset($data->categorie) )
-	{
-		$set.=",categorie";
-		$values.=",'$data->categorie'";
-	}
-	if (isset($data->rang) )
-	{
-		$set.=",rang";
-		$values.=",'$data->rang'";
-	}
-	
-	if (isset($data->officiel) )
-	{
-		$set.=",officiel";
-		$values.=",'$data->officiel'";
-	}
-	
-	if (isset($data->licence) )
-	{
-		$set.=",licence";
-		$values.=",'$data->licence'";
-	}
-	if (isset($data->cotisation) )
-	{
-		$set.=",cotisation";
-		$values.=",'$data->cotisation'";
-	}
-	if (isset($data->entr) )
-	{
-		$set.=",entr";
-		( $data->entr ) ?   $v="1"  :  $v="0" ;
-		$values.=",'$v'";
-	}
-	
-	if (isset($data->banque) )
-	{
-		$set.=",banque";
-		$values.=",'$data->banque'";
-	}
-	
-	if (isset($data->cheque1) )
-	{
-		$set.=",cheque1";
-		$values.=",'$data->cheque1'";
-	}
-	if (isset($data->cheque2) )
-	{
-		$set.=",cheque2";
-		$values.=",'$data->cheque2'";
-	}
-	if (isset($data->cheque3) )
-	{
-		$set.=",cheque3";
-		$values.=",'$data->cheque3'";
-	}
-	
-	
-	if (isset($data->num_cheque1) )
-	{
-		$set.=",num_cheque1";
-		$values.=",'$data->num_cheque1'";
-	}
-	if (isset($data->num_cheque2) )
-	{
-		$set.=",num_cheque2";
-		$values.=",'$data->num_cheque2'";
-	}
-	if (isset($data->num_cheque3) )
-	{
-		$set.=",num_cheque3";
-		$values.=",'$data->num_cheque3'";
-	}
-	
-	
-	if (isset($data->ch_sport) )
-	{
-		$set.=",ch_sport";
-		$values.=",'$data->ch_sport'";
-	}
-	if (isset($data->num_sport) )
-	{
-		$set.=",num_sport";
-		$values.=",'$data->num_sport'";
-	}
-	
-	
-	if (isset($data->coup_sport) )
-	{
-		$set.=",coup_sport";
-		$values.=",'$data->coup_sport'";
-	}
-	if (isset($data->num_coupsport) )
-	{
-		$set.=",num_coupsport";
-		$values.=",'$data->num_coupsport'";
-	}
-	
-	
-	
-	if (isset($data->nbre_chvac10) )
-	{
-		$set.=",nbre_chvac10";
-		$values.=",'$data->nbre_chvac10'";
-	}
-	
-	
-	if (isset($data->nbre_chvac20) )
-	{
-		$set.=",nbre_chvac20";
-		$values.=",'$data->nbre_chvac20'";
-	}
-	
-	if (isset($data->especes) )
-	{
-		$set.=",especes";
-		$values.=",'$data->especes'";
-	}
-	
-	
-	
-	if (isset($data->cert_medical) )
-	{
-		$set.=",cert_medical";
-		( $data->cert_medical ) ?   $v="1"  :  $v="0" ;
-		$values.=",'$v'";
-	}
-	
-	if (isset($data->auto_parentale) )
-	{
-		$set.=",auto_parentale";
-		( $data->auto_parentale ) ?   $v="1"  :  $v="0" ;
-		$values.=",'$v'";
-	}
-	
-	
-	if (isset($data->fiche_medicale) )
-	{
-		$set.=",fiche_medicale";
-		( $data->fiche_medicale ) ?   $v="1"  :  $v="0" ;
-		$values.=",'$v'";
-	}
-	
-	
-	if (isset($data->photo) )
-	{
-		$set.=",photo";
-		( $data->photo ) ?   $v="1"  :  $v="0" ;
-		$values.=",'$v'";
-	}
-	
-	
-	if (isset($data->reglement) )
-	{
-		$set.=",reglement";
-		( $data->reglement ) ?   $v="1"  :  $v="0" ;
-		$values.=",'$v'";
-	}
-	
-	if (isset($data->paye) )
-	{
-		$set.=",paye";
-		( $data->paye ) ?   $v="1"  :  $v="0" ;
-		$values.=",'$v'";
-	}
-	
-	if (isset($data->commentaires) )
-	{
-		$set.=",commentaires";
-		$values.=",'".utf8_decode($data->commentaires)."'";
-	}
-	
-	
-	
+
 	$set.=") ";
 	$values.=") ";
 	$query =" INSERT INTO  $tlicencies  $set  VALUES  $values ";
 	
-echo $query ;
-
 	$result = $mysqli->query( $query ) ;
 	if (!$result ) {
 		($dev) ? $err=$mysqli->connect_error: $err="invalid query";
@@ -533,6 +358,10 @@ function update($data) {
 	
 	
 	( isset($data->cotisation) ) ?  $set.=",cotisation ='$data->cotisation' "  :  $set.=",cotisation = NULL " ;
+
+	
+	( isset($data->carte) ) ?  $set.=",carte ='".utf8_decode($data->carte)."' "  :  $set.=",carte = NULL " ;
+	( isset($data->num_carte) ) ?  $set.=",num_carte ='".utf8_decode($data->num_carte)."' "  :  $set.=",num_carte = NULL " ;
 
 
 	( isset($data->banque) ) ?  $set.=",banque ='$data->banque' "  :  $set.=",banque = NULL " ;
@@ -637,16 +466,14 @@ function update($data) {
 function delete($id) {
 	global $dev,$mysqli;
 	global $tlicencies;
-	
-
-/*	$query = "DELETE FROM  $tlicencies WHERE id = '$id' ";
+	$query = "DELETE FROM  $tlicencies WHERE id = '$id' ";
 	$result = $mysqli->query( $query ) ;
 	if (!$result ) {
 		($dev) ? $err=$mysqli->connect_error: $err="invalid query";
 		setError( $err );
 		return ;
 		
-	}*/
+	}
 	header("X-Message: modification ok",true);
 	setSuccess("Suppression ok");
 }
