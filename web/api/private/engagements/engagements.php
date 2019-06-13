@@ -461,11 +461,17 @@ function getEngagements($id) {
 	while($r = $result->fetch_assoc() ) {
 		//unset( $r['commentaires'] ) ;
 		$r['commentaire']=utf8_encode($r['commentaire'] );
+		
 		$r['nom']=utf8_encode($r['nom'] );
 		$r['prenom']=utf8_encode($r['prenom'] );
 		
 		$r['categorie']=ucfirst( $r['categorie'] );
 		$tengage=array();
+		/*$debut = new DateTime($r['debut']);
+		if( $r['debut'] == $r['fin'] ) {
+			$day = $debut->format("D d M"); */
+
+
 		$tengage['day'] = substr($r['date'],8 );
 		$tengage['presence'] = $r['presence'];
 		$tengage['edid'] = $r['edid'];
@@ -494,7 +500,8 @@ function getEngagements($id) {
 		$rows[] = $last;
 	
 
-	echo  json_encode(array_values($rows),JSON_NUMERIC_CHECK );
+	echo  json_encode(array_values($rows) ) ;
+	//,  JSON_NUMERIC_CHECK );
 
 }
 
@@ -505,10 +512,10 @@ function formatFr($format) {
 	$french_days = array('Lundi', 'Mardi', 'Mercredi', 'Jeudi', 'Vendredi', 'Samedi', 'Dimanche');
 	
 	$english_months = array('January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December');
-	$french_months = array('Janvier', 'Février', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Août', 'Septembre', 'Octobre', 'Novembre', 'Décembre');
+	$french_months = array('Janvier', 'Fevrier', 'Mars', 'Avril', 'Mai', 'Juin', 'Juillet', 'Aout', 'Septembre', 'Octobre', 'Novembre', 'Decembre');
 	
 	$english_msmall = array('Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec');
-	$french_msmall= array('Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Jui', 'Jul', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc');
+	$french_msmall= array('Jan', 'Fev', 'Mar', 'Avr', 'Mai', 'Jui', 'Jul', 'Aou', 'Sep', 'Oct', 'Nov', 'Dec');
 	
 	$english_dsmall = array('Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun');
 	$french_dsmall = array('Lun', 'Mar', 'Mer', 'Jeu', 'Ven', 'Sam', 'Dim');
@@ -704,14 +711,14 @@ function sendMails($idcompetitions,$idengage ) {
 	if( strtotime($compet['limite'] ) <= time()  )
 	{
 		$err="la date limite est dépassée ! ".$compet['limite'];
-		setError( $err );
+		setError( utf8_decode( $err ) );
 		return ;
 	}
 	
 	( $idengage === true ) ? $wh=" id_competitions = '$idcompetitions' " :$wh=" id = '$idengage' " ;
 	
 		
-	$query="SELECT id,id_licencies,notification  FROM $tengagements WHERE $wh ";
+	$query="SELECT id,id_licencies,notification,date_reponse  FROM $tengagements WHERE $wh ";
 	$result = $mysqli->query( $query ) ;
 	if (!$result) {
 		($dev) ? $err=$mysqli->error: $err="invalid request";
@@ -729,6 +736,10 @@ function sendMails($idcompetitions,$idengage ) {
 		$id=$r['id'];
 		$idlic=$r['id_licencies'];
 		$notification=$r['notification'];
+		$date_reponse=$r['date_reponse'];
+		if ( $idengage === true && $date_reponse !== NULL  ) {
+			continue;
+		}
 		
 		
 		/*if( $notification == 0 ) $first=true;
@@ -817,8 +828,11 @@ function envoyer_mail($compet, $lic  , $ide , $idlic )
 	
 	$to=$lic['email'];
 
-	$subject ="[ Club Natation ] Engagement à la compétition $label : ".utf8_encode($nageur);
-	//$subject = utf8_encode( $subject);
+	// $label = utf8_encode( $label ) ;
+	// $nageur = utf8_encode( $label ) ;
+
+	$subject =utf8_decode("[ Club Natation ] Engagement à la compétition ") . $label ." : ".$nageur;
+	
 		
 	$message="<html><head><title>Engagement competition</title></head><body>".
 			"Bonjour,<br> $nageur a été selectionné(e) pour participer à la compétition suivante : <br>
@@ -845,7 +859,8 @@ function envoyer_mail($compet, $lic  , $ide , $idlic )
 			</body></html>"  ;
 	
 			
-			
+		
+		
 			
 			$headers = "MIME-Version: 1.0\n";
 			$headers .= "X-Sender: <www.ecnatation.org>\n";
@@ -856,6 +871,7 @@ function envoyer_mail($compet, $lic  , $ide , $idlic )
 			$headers .= "From: ECN natation <webmaster@ecnatation.org>\n";
 			if( !$dev )  $headers .= "Bcc:ecninscription@gmail.com\n";
 			$headers .= "Content-Type: text/html; charset=iso-8859-1";
+			
 			
 	
 			

@@ -107,7 +107,7 @@ function getEngagement ($id,$code ) {
 	
 
 	
-	$query = "SELECT  id_competitions,id_licencies  FROM $tengagements  WHERE id = '$id' AND id_licencies = '$code' ";
+	$query = "SELECT  id_competitions,id_licencies,commentaire  FROM $tengagements  WHERE id = '$id' AND id_licencies = '$code' ";
 	
 	
 	$result = $mysqli->query( $query ) ;
@@ -122,7 +122,7 @@ function getEngagement ($id,$code ) {
 	
 	$num = $result->num_rows ;
 	if( $num === 0 ) {
-		$error="engagement est inconnu";
+		$error="engagement inconnu";
 		setError($error);
 		return ;
 	}
@@ -131,6 +131,7 @@ function getEngagement ($id,$code ) {
 		
 		$idc= $r['id_competitions'];
 		$idl= $r['id_licencies'];
+		$comment = $r['commentaire'];
 		
 	}
 	
@@ -239,6 +240,7 @@ function getEngagement ($id,$code ) {
 	
 
 	$res['message']=( $message );
+	$res['commentaire']=( $comment );
 	
 	header("Content-type:application/json");
 	echo  json_encode( $res );

@@ -6,7 +6,7 @@ require_once('../fpdf/fpdi.php');
 
 
 /////////////////////
-function doPdf($nom,$prenom,$date,$tarif,$saison) {
+function doPdf($nom,$prenom,$date,$cotisation,$saison) {
 
 list($y,$m,$d)=explode("-",$date);
 $date=$d."/".$m."/".$y;
@@ -16,12 +16,12 @@ $prenom = utf8_decode( "Prénom: ".$prenom ) ;
 $date = utf8_decode( "Date de Naissance: ".$date );
 
 
-$texte1= utf8_decode("Je soussigné, Philippe Simon, Président de l'association Espérance" );
+$texte1= utf8_decode("Je soussigné, Géraldine Gilbert, Présidente de l'association Espérance" );
 $texte2=utf8_decode("Chartres de Bretagne Natation (N° Jeunesse et Sports : 0135 S80)");
 $texte3=utf8_decode("certifie que :");
 
 $texte4=utf8_decode("est adhérent de l'association Espérance Chartres de Bretagne Natation,");
-$texte5=utf8_decode("et s'est acquitté(e) de la cotisation au club pour un montant de $tarif Euros");
+$texte5=utf8_decode("et s'est acquitté(e) de la cotisation au club pour un montant de $cotisation Euros");
 $texte6=utf8_decode("pour la $saison.");
 
 ////////////////////////////////////////////////////////////////

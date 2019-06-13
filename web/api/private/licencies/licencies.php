@@ -125,13 +125,13 @@ function validateObject($json) {
 function get($id=false) {
 
 	global $dev,$mysqli;
-	global $tlicencies;
+	global $tlicencies_encours;
 	
 	
 	
 	( $id === false )  ?  $where=""  :  $where=" WHERE id = '$id' " ;
 	
-	$query = "SELECT *  FROM $tlicencies  $where  ORDER BY nom, prenom ";
+	$query = "SELECT *  FROM $tlicencies_encours  $where  ORDER BY nom, prenom ";
 	
 	
 	$result = $mysqli->query( $query ) ;
@@ -222,7 +222,7 @@ function get($id=false) {
 function add($data) {
 	
 	global $dev,$mysqli;
-	global $tlicencies;
+	global $tlicencies_encours;
 	
 
 	$idlic = createKeyCode( $data->nom , $data->prenom) ;
@@ -285,7 +285,7 @@ function add($data) {
 
 	$set.=") ";
 	$values.=") ";
-	$query =" INSERT INTO  $tlicencies  $set  VALUES  $values ";
+	$query =" INSERT INTO  $tlicencies_encours  $set  VALUES  $values ";
 	
 	$result = $mysqli->query( $query ) ;
 	if (!$result ) {
@@ -306,7 +306,7 @@ function add($data) {
 function update($data) {
 	
 	global $dev,$mysqli;
-	global $tlicencies;
+	global $tlicencies_encours;
 	
 	$nom = utf8_decode($data->nom);
 	$prenom = utf8_decode($data->prenom);
@@ -432,7 +432,7 @@ function update($data) {
 	
 	$set.=" WHERE id = '$id' " ;
 	
-	$query = "UPDATE  $tlicencies  $set  ";
+	$query = "UPDATE  $tlicencies_encours  $set  ";
 	
 		
 	$result = $mysqli->query( $query ) ;
@@ -465,8 +465,8 @@ function update($data) {
 /////////////////////////////////////////////////////////////////////////////////////
 function delete($id) {
 	global $dev,$mysqli;
-	global $tlicencies;
-	$query = "DELETE FROM  $tlicencies WHERE id = '$id' ";
+	global $tlicencies_encours;
+	$query = "DELETE FROM  $tlicencies_encours WHERE id = '$id' ";
 	$result = $mysqli->query( $query ) ;
 	if (!$result ) {
 		($dev) ? $err=$mysqli->connect_error: $err="invalid query";
@@ -494,8 +494,7 @@ function send_attestation ( $data) {
 	
 	if( $dev ) $to=$dev_email;
 	
-	$to="denis.lesech@gmail.com";
-	
+		
 	$pdf=doPdf($nom,$prenom,$date,$cotisation,$saison_enc);
 	$pdf->setCompression(true);
 	

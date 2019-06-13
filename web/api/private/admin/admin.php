@@ -99,7 +99,7 @@ function splitemail($email){
 }
 /////////////////////////////////////////////////////////////////////////////////
 function envoyer_mail( $nom, $prenom, $key, $email  ) {
-        global $dev,$saison_enc;
+        global $dev,$dev_email,$saison_enc;
       
 
         $message=getMessageInsciption($nom,$prenom,$key);
@@ -119,7 +119,7 @@ function envoyer_mail( $nom, $prenom, $key, $email  ) {
        
         if( $dev ) {
             $subject ="[TEST Club de Natation] Inscription  $saison_enc : ".$prenom." ".$nom;
-            $email = "denis.lesech@gmail.com";
+            $email = $dev_email;
         }
 
        
