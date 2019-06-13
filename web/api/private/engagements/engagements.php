@@ -121,9 +121,9 @@ function getLicencies($idcompet)
 	
 	
 	
-	$query="SELECT id,id_licencies FROM ".$tengagements." WHERE id_competitions=$idcompet AND date_notify IS NULL ";
+	$query="SELECT id,id_licencies FROM ".$tengagements." WHERE id_competitions='$idcompet' ";
 	
-	
+		
 	$result = $mysqli->query( $query ) ;
 	$myliste=array();
 	while($r = $result->fetch_assoc()) {
@@ -134,8 +134,7 @@ function getLicencies($idcompet)
 		
 	}
 	
-	
-	
+		
 	$query="SELECT id,nom,prenom,categorie,rang FROM ".$tlicencies." WHERE  valide='1'  ORDER BY nom,prenom ";
 	$result = $mysqli->query( $query ) ;
 	
@@ -148,7 +147,7 @@ function getLicencies($idcompet)
 			continue ;
 		}
 		
-		$r['nom']=utf8_encode($r['nom']);
+		$r['nom']=utf8_encode( ucfirst( strtolower( $r['nom'] ) ) );
 		$r['prenom']=utf8_encode($r['prenom']);
 		$r['categorie']= strtolower( $r['categorie'] );
 		$myres[]=$r;
@@ -209,7 +208,7 @@ function getCategories($idcompet,$cat)
 		$id=$r['id'] ;
 		if ( ! isset($myliste[$id]) )
 		{
-			$r['nom']=utf8_encode($r['nom']);
+			$r['nom']=utf8_encode( ucfirst( strtolower( $r['nom'] ) ) );
 			$r['prenom']=utf8_encode($r['prenom']);
 			$r['selected']=false;
 			$myres[]=$r;

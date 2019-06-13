@@ -34,20 +34,19 @@ switch ($method) {
 }
 ////////////////////////////////////////////////////////////////////////////////////
 function sendInscriptions() {
-    global $tlicencies ;
+    global $tlicencies_encours ;
     global $dev,$mysqli ;
-    $year = date('Y');
-    $table_new = "licencies_".$year;	
+    
 
-        $query = "SELECT * FROM $table_new WHERE "
+    /*    $query = "SELECT * FROM $tlicencies_encours WHERE "
                 ." categorie IS NOT NULL AND  date_inscription IS NULL "
                 ."  AND inscription = '0' ORDER BY id  "; 
-    
+    */
              
     if ( $dev ) {
-        $query = "SELECT * FROM $table_new WHERE "
-                 ." categorie IS NOT NULL AND  date_inscription IS NULL "
-                 ."  AND inscription = '0' AND (  nom = 'le sech' OR nom ='simon' )  ORDER BY id  "; 
+        $query = "SELECT * FROM $tlicencies_encours WHERE "
+                 ." categorie IS NOT NULL  "
+                 ."  AND (  nom = 'le sech' OR nom ='simon' )  ORDER BY id  "; 
 
     }
 
@@ -133,18 +132,18 @@ function envoyer_mail( $nom, $prenom, $key, $email  ) {
 }
 /////////////////////////////////////////////////////////////////////////////////
 function prepare() {
-    global $tlicencies ;
+    global $tlicencies_encours ;
     global $dev,$mysqli ;
     $query=array();
     
-    $table_last = $tlicencies ;
+   
     $year = date('Y');
     $table_new = "licencies_".$year;
 
-    $query[]="CREATE TABLE $table_new LIKE $table_last  ";
-    $query[]="INSERT $table_new SELECT * FROM $table_last  ";  
-    $query[]="UPDATE $table_new  SET paye=0,photo=0,fiche_medicale=0,cert_medical=0,auto_parentale=0,carte=NULL,confirmation_email=0,date_valide=NULL,date_inscription=NULL,inscription='0',valide=0,commentaires=NULL,cotisation='0.00',type='R',num_cheque1=NULL,num_cheque2=NULL,num_cheque3=NULL,cheque1=NULL "; 
-    $query[]="UPDATE $table_new  SET tarif=0,reglement=0,num_cheque1=NULL,num_cheque2=NULL,num_cheque3=NULL,cheque1=NULL,cheque2=NULL,cheque3=NULL,ch_sport=NULL,num_sport=NULL,coup_sport=NULL,num_coupsport=NULL,banque=NULL,especes=NULL,nbre_chvac10=0,nbre_chvac20=0 ";
+    $query[]="CREATE TABLE $table_new LIKE $tlicencies_encours  ";
+    $query[]="INSERT $table_new SELECT * FROM $tlicencies_encours  ";  
+    $query[]="UPDATE $table_new  SET paye=0,photo=0,fiche_medicale=0,cert_medical=0,auto_parentale=0,carte=NULL,num_carte=NULL,confirmation_email=0,date_valide=NULL,date_inscription=NULL,inscription='0',valide=0,commentaires=NULL,cotisation='0.00',type='R',num_cheque1=NULL,num_cheque2=NULL,num_cheque3=NULL,cheque1=NULL "; 
+    $query[]="UPDATE $table_new  SET total=0,reglement=0,num_cheque1=NULL,num_cheque2=NULL,num_cheque3=NULL,cheque1=NULL,cheque2=NULL,cheque3=NULL,ch_sport=NULL,num_sport=NULL,coup_sport=NULL,num_coupsport=NULL,banque=NULL,especes=NULL,nbre_chvac10=0,nbre_chvac20=0 ";
     $query[]="UPDATE $table_new  SET categorie = NULL  WHERE categorie = '' ";
     $query[]="UPDATE $table_new  SET officiel = NULL  WHERE officiel = '' ";
 
