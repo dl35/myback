@@ -828,39 +828,40 @@ function envoyer_mail($compet, $lic  , $ide , $idlic )
 	
 	$to=$lic['email'];
 
-	// $label = utf8_encode( $label ) ;
+	 
 	// $nageur = utf8_encode( $label ) ;
 
 	$subject =utf8_decode("[ Club Natation ] Engagement à la compétition ") . $label ." : ".$nageur;
 	
+	$label = utf8_encode( $label ) ;
+	$lieu = utf8_encode( $lieu ) ;
+	$nageur = utf8_encode( $nageur ) ;
 		
 	$message="<html><head><title>Engagement competition</title></head><body>".
-			"Bonjour,<br> $nageur a été selectionné(e) pour participer à la compétition suivante : <br>
-			$label qui se deroulera $date à $lieu .<br>
-			La date limite de validation est le : <u>$limite</u> .<br><br>
-			Merci de VALIDER ou NON la participation de $nageur à cette compétition .<br>
-			Pour cela cliquer sur le lien ci-dessous :<br>
-			<a href=\"$url\" >gestion de l'engagement</a><br><br>
+			"Bonjour,<br> $nageur a été selectionné(e) pour participer à la compétition suivante : <br>".
+			"$label qui se deroulera $date à $lieu .<br>".
+			"La date limite de validation est le : <u>$limite</u> .<br><br>".
+			"Merci de VALIDER ou NON la participation de $nageur à cette compétition .<br>".
+			"Pour cela cliquer sur le lien ci-dessous :<br>".
+			"<a href=\"$url\" >gestion de l'engagement</a><br><br>".
 			
-			<strong>ATTENTION, nous vous rappelons que le règlement intérieur du club précise que  :<br>
-			-le transport des nageurs aux compétitions est à la charge des parents.<br>
-			Merci de vous assurer que le déplacement de votre enfant à la compétition est assuré.<br>
-			Nous mettons à la disposition des parents sur le site Web, les Wikis par catégorie pour faciliter le covoiturage.<br><br>
+			"<strong>ATTENTION, nous vous rappelons que le règlement intérieur du club précise que  :<br>".
+			"-le transport des nageurs aux compétitions est à la charge des parents.<br>".
+			"Merci de vous assurer que le déplacement de votre enfant à la compétition est assuré.<br>".
+			"Nous mettons à la disposition des parents sur le site Web, les Wikis par catégorie pour faciliter le covoiturage.<br><br>".
 			
-			-pour tout forfait après la date limite d'engagement à la compétition SANS fourniture d'un certificat médical,<br>
-			la Fédération Française de Natation (FFN) nous facture une amende pour chaque épreuve non nagée.<br>
-			Sans fourniture du certificat médical, cette amende sera à payer par les parents du nageur.<br><br></strong>
-			
-			
-			Sportivement<br>
-			--<br>
-			Les entraineurs du club <br>
-			Web : <a href=\"http://ecnatation.fr\" >http://ecnatation.fr</a><br>
-			</body></html>"  ;
+			"-pour tout forfait après la date limite d'engagement à la compétition SANS fourniture d'un certificat médical,<br>".
+			"la Fédération Française de Natation (FFN) nous facture une amende pour chaque épreuve non nagée.<br>".
+			"Sans fourniture du certificat médical, cette amende sera à payer par les parents du nageur.<br><br></strong>".
+						
+			"Sportivement<br>".
+			"--<br>".
+			"Les entraineurs du club <br>".
+			"Web : <a href=\"http://ecnatation.fr\" >http://ecnatation.fr</a><br>".
+			"</body></html>"  ;
 	
 			
-		
-		
+			$message =utf8_decode( $message );
 			
 			$headers = "MIME-Version: 1.0\n";
 			$headers .= "X-Sender: <www.ecnatation.org>\n";
@@ -920,13 +921,15 @@ function envoyer_mail($compet, $lic  , $ide , $idlic )
 		$nageur=$lic['prenom']." ".$lic['nom'];
 		
 		$to=$lic['email'];
-		$subject ="Compétition $label : ".$nageur;
+		
 		$subject ="[ Club Natation Stage] $label : ".$nageur;
 
+		$nageur = utf8_encode( $nageur );
+		$lieu = utf8_encode( $lieu );
 
 		$message="<html><head><title>Stage</title></head><body>".
-				"Bonjour,<br> un stage est organisé à  $lieu  $date . <br><br>
-				Merci de VALIDER ou NON la participation de $nageur à ce stage .<br>
+				"Bonjour,<br> un stage est organisé à  $lieu  $date . <br><br>".
+				"Merci de VALIDER ou NON la participation de $nageur à ce stage .<br>
 				Pour cela cliquer sur le lien ci-dessous :<br>
 				<a href=\"$url\" >gestion du stage </a><br><br>
 				Sportivement<br>
@@ -935,6 +938,7 @@ function envoyer_mail($compet, $lic  , $ide , $idlic )
 				Web : <a href=\"http://ecnatation.fr\" >http://ecnatation.fr</a><br>
 				</body></html>"  ;
 		
+		$message = utf8_decode( $message );		
 
 		$headers = "MIME-Version: 1.0\n";
 		$headers .= "X-Sender: <www.ecnatation.org>\n";
