@@ -10,11 +10,15 @@ switch ($method) {
         setError( "invalid id");
         return;
         }
-        if( $id === 'prepare') {
+        if( $id === 'prepare' ) {
         prepare() ;
-        }else if($id === 'send') {
+        }else if( $id === 'send' ) {
         sendInscriptions(); 
-        }
+        }else if( $id === 'addtest' ) {
+        addTest(); 
+        }else if( $id === 'deltest' ) {
+        delTest();
+                }
         break;
     case 'POST':
 	    break;    
@@ -32,6 +36,65 @@ switch ($method) {
 		break;
 		
 }
+
+
+////////////////////////////////////////////////////////////////////////////////////
+function addTest() {
+	global $dev,$mysqli;
+	global $tlicencies_encours;
+    
+    $nom = "test";
+	$prenom = "test";
+	$adresse = "adresse de test";
+    $ville = "Noyal Chatillon sur seiche";
+    $cp = "35230";
+    $sexe= "H";
+    $date="2000-03-15";
+    $tel="06000000,06000001,06000002";
+    $email="test@test.fr,test2@test.fr,test3@test.fr";
+
+	$idlic = "TEST1234";
+	
+
+	
+	$cat = CategorieFromDate( $date , $sexe ) ;
+	$rang = RangFromDate( $date , $sexe );
+
+    $cat = strtolower( $cat );
+
+	$set="(id,nom,prenom,date,sexe,adresse,code_postal,ville,categorie,rang,type,email,telephone)" ;
+	$values="('$idlic','$nom','$prenom','$date','$sexe','$adresse','$cp','$ville','$cat','$rang','N','$email','$tel')";
+    $query =" INSERT INTO  $tlicencies_encours  $set  VALUES  $values ";
+
+	$result = $mysqli->query( $query ) ;
+	if (!$result ) {
+		($dev) ? $err=$mysqli->error: $err="invalid query";
+		setError( $err );
+		return;
+    }
+    setSuccess("add test");
+    return;
+    
+    
+}
+////////////////////////////////////////////////////////////////////////////////////
+function delTest() {
+    global $dev,$mysqli;
+    global $tlicencies_encours;
+    
+    $idlic = "TEST1234";
+    $query ="DELETE FROM  $tlicencies_encours  WHERE id = '$idlic' ";
+	
+	$result = $mysqli->query( $query ) ;
+	if (!$result ) {
+		($dev) ? $err=$mysqli->connect_error: $err="invalid query";
+		setError( $err );
+		return;
+    }
+    $mysqli->close();
+    setSuccess("del test");
+
+}
 ////////////////////////////////////////////////////////////////////////////////////
 function sendInscriptions() {
     global $tlicencies_encours ;
@@ -46,7 +109,7 @@ function sendInscriptions() {
     if ( $dev ) {
         $query = "SELECT * FROM $tlicencies_encours WHERE "
                  ." categorie IS NOT NULL  "
-                 ."  AND (  nom = 'le sech' OR nom ='simon' )  ORDER BY id  "; 
+                 ."  AND (  nom = 'test' )  ORDER BY id  "; 
 
     }
 
