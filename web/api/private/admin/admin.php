@@ -146,6 +146,7 @@ function prepare() {
     $query[]="UPDATE $table_new  SET total=0,reglement=0,num_cheque1=NULL,num_cheque2=NULL,num_cheque3=NULL,cheque1=NULL,cheque2=NULL,cheque3=NULL,ch_sport=NULL,num_sport=NULL,coup_sport=NULL,num_coupsport=NULL,banque=NULL,especes=NULL,nbre_chvac10=0,nbre_chvac20=0 ";
     $query[]="UPDATE $table_new  SET categorie = NULL  WHERE categorie = '' ";
     $query[]="UPDATE $table_new  SET officiel = NULL  WHERE officiel = '' ";
+    $query[]="UPDATE $table_new  SET type = 'R'  WHERE type = 'N' ";
 
     
     foreach ($query as $q ) {
