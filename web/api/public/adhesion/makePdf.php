@@ -44,18 +44,17 @@ function makepdf( $data  )
         $pdf->SetXY(38, 71.5+7);$pdf->Write(0, $data->cp);
         $pdf->SetXY(71, 71.5+7);$pdf->Write(0, $data->ville );   
 
-	
-
-        $pdf->SetXY(61, 92.5+7);$pdf->Write(0, $data->tel1);
-	    $pdf->SetXY(152, 92.5+7);$pdf->Write(0, $data->tel2); 
-	    $pdf->SetXY(61, 99.5+7);$pdf->Write(0, $data->tel3 ); 
+        $pdf->SetXY(61, 85.5+7);$pdf->Write(0, $data->tel1);
+        $pdf->SetXY(61, 92.5+7);$pdf->Write(0, $data->tel2);
+	    $pdf->SetXY(61, 99.5+7);$pdf->Write(0, $data->tel3); 
+	    // $pdf->SetXY(61, 106.5+7);$pdf->Write(0, $data->tel3 ); 
 //if( isset($ttels[3]) ){	$pdf->SetXY(152, 99.5+7);$pdf->Write(0, $ttels[3]);}
 //if( isset($ttels[4]) ){	$pdf->SetXY(61, 106.5+7);$pdf->Write(0, $ttels[4]);}
 
-
-        $pdf->SetXY(61, 120.5+7);$pdf->Write(0, $data->email1 );  
-        $pdf->SetXY(61, 127.5+7);$pdf->Write(0, $data->email2 );
-        $pdf->SetXY(61, 134.5+7);$pdf->Write(0, $data->email3 );
+        $pdf->SetXY(61, 113.5+7);$pdf->Write(0, $data->email1 );  
+        $pdf->SetXY(61, 120.5+7);$pdf->Write(0, $data->email2 );  
+        $pdf->SetXY(61, 127.5+7);$pdf->Write(0, $data->email3 );
+    //    $pdf->SetXY(61, 134.5+7);$pdf->Write(0, $data->email3 );
 //$pdf->SetXY(110, 148.5+7);$pdf->Write(0, $type);
 	
 	
