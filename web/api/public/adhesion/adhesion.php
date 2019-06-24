@@ -124,9 +124,10 @@ function get($id) {
 	
 	
 	
-	$res=false;
+	$count="";
 	while($r = $result->fetch_assoc() ) {
 		
+		$count = "1" ;
 		
 		$res['nom']=utf8_encode( $r['nom'] );
 		$res['prenom']=utf8_encode( $r['prenom'] );
@@ -151,7 +152,7 @@ function get($id) {
 		
 	}
 	
-	if (count($res) === 0  ) {
+	if ( empty($count)  ) {
 		setError("cet id n'existe pas");
 		return;
 	}
