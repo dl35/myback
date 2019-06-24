@@ -185,7 +185,7 @@ function get($id=false) {
 		
 		unset ( $r['telephone'] ) ;
 		unset ( $r['email'] ) ;
-		unset ( $r['inscription'] );
+		
 		unset ( $r['niveau'] );
 		unset ( $r['date_inscription'] );
 		unset ( $r['confirmation_email'] );
