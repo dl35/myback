@@ -92,7 +92,7 @@ function get() {
 			continue ;
 		}
 		
-		$r['categorie'] = strtolower( $r['categorie'] );
+		$r['categorie'] = strtoupper( $r['categorie'] );
 
 		$e = json_encode( $r ) ;
 		if ( $e !== false  )

@@ -199,12 +199,7 @@ function get($id=false) {
 		{
 			$rows[] = $r  ;
 		}
-		else {
-			
-			echo "\n\n**= ".$r['id']." == ".$r['nom']. " = ***";
-		}
-		//unset( $r['commentaires'] ) ;
-		
+	
 		
 	}
 	
@@ -235,8 +230,8 @@ function add($data) {
 	$cat = CategorieFromDate( $data->date , $data->sexe ) ;
 	$rang = RangFromDate( $data->date , $data->sexe );
 
-	$set="(id,nom,prenom,date,sexe,adresse,code_postal,ville,categorie,rang,type" ;
-	$values="('$idlic','$nom','$prenom','$data->date','$data->sexe','$adresse','$data->code_postal','$ville','$cat','$rang','N'";
+	$set="(id,nom,prenom,date,sexe,adresse,code_postal,ville,categorie,rang,type,inscription,date_inscription" ;
+	$values="('$idlic','$nom','$prenom','$data->date','$data->sexe','$adresse','$data->code_postal','$ville','$cat','$rang','N','1',NOW()";
 	
 	$set.=",email";
 	$v="";
