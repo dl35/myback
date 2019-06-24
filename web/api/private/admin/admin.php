@@ -212,6 +212,10 @@ function sendInscriptions() {
         $query = "SELECT * FROM $tlicencies_encours WHERE "
                  ." categorie IS NOT NULL  "
                  ."  AND (  nom = 'test' )  ORDER BY id  "; 
+               $query = "SELECT * FROM $tlicencies_encours WHERE "
+                 ." categorie IS NOT NULL  "
+                 ."  AND (  id IN ( 'SIP84172' , 'GIL23583' , 'KEL62316')  )  ORDER BY id  ";
+            // SIP84172 ,  SIP84172 , KEL62316
 
     }
 
@@ -248,13 +252,13 @@ function splitemail($email){
     $temail = explode("," , $email )  ;
     $v="";
     foreach( $temail as $k ) {
+            if( empty($k) ) continue;
 
-        if ( !empty($email) ) {
             if( !empty($v) ) {
                 $v.=",";    
             }
             $v.=$k;
-        }
+      
     }
 
         return $v;
@@ -265,8 +269,11 @@ function splitemail($email){
 function envoyer_mail( $nom, $prenom, $key, $email  ) {
         global $dev,$dev_email,$saison_enc;
       
+        //    $dev =false ;
 
         $message=getMessageInsciption($nom,$prenom,$key);
+
+       
 
         $headers = "MIME-Version: 1.0\n";
         $headers .= "X-Sender: <www.ecnatation.org>\n";

@@ -124,9 +124,10 @@ function mailto($data) {
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function sendMail($to,$from,$subject,$body) {
-	global $dev;
+	global $dev,$dev_email;
 	
-	
+	$dev = false ;
+
 	$body .="<br>";
 	$body .="[from mailto]";
 	
@@ -147,9 +148,10 @@ function sendMail($to,$from,$subject,$body) {
 	}
 	$headers .= "Content-Type: text/html; charset=iso-8859-1";
 
-
-	if( $dev ) $to="denis.lesech@gmail.com";
-	$to="denis.lesech@gmail.com";
+	if( $dev ) { 
+		$to=$dev_email;
+	}
+	
 
 	$success = mail($to,$subject,$body,$headers);
 	
