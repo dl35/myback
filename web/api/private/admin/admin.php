@@ -19,10 +19,18 @@ switch ($method) {
         }else if( $id === 'deltest' ) {
         delTest();
                 }
+        else if( $id === 'params' ) {
+         getParams();
+                }                
         break;
-    case 'POST':
-	    break;    
     case 'PUT':
+        $data = json_decode(file_get_contents('php://input'));
+        $v= validateParams($data) ;
+        if( !$v ) break;
+        addParams( $data) ;
+        
+	    break;    
+    case 'POST':
    	    break;
 	case 'DELETE':
 		if( !isset($id) ) {
@@ -37,7 +45,101 @@ switch ($method) {
 		
 }
 
+////////////////////////////////////////////////////////////////////////////////////
+function getParams() {
+    global $mysqli;
+   
+    $query ="SELECT *  FROM  params where id ='1' ";
+	
 
+    $result = $mysqli->query($query) ;
+    if (!$result) {
+        ($dev) ? $err=$mysqli->error : $err="invalid request";
+        setError( $err );
+        return ;
+    }
+
+    $r = $result->fetch_assoc() ;
+   // ( $r['dev'] == '0' ) ? $r['dev'] = false : $r['dev'] = true ;
+    $r['dev_email'] = utf8_encode( $r['dev_email'] ) ;
+    $r['saison_enc'] = utf8_encode( $r['saison_enc'] ) ;
+    $r['saison_last'] = utf8_encode( $r['saison_last'] ) ;
+
+    $r['dateforum'] = utf8_encode( $r['dateforum'] ) ;
+
+    $r['tlicencies_encours'] = utf8_encode( $r['tlicencies_encours'] ) ;
+    $r['tlicencies_last'] = utf8_encode( $r['tlicencies_last'] ) ;
+    $r['tlicencies'] = utf8_encode( $r['tlicencies'] ) ;
+    
+    $r['tlicencies_encours']  = str_replace("tlicencies_" , "" , $r['tlicencies_encours']  );
+    $r['tlicencies_last']  = str_replace("tlicencies_" , "" , $r['tlicencies_last']  );
+    
+
+    unset($r['id']);
+
+    $mysqli->close();
+    header("Content-type:application/json");
+    $datas['datas']=$r;
+    echo json_encode( $r );
+
+}
+////////////////////////////////////////////////////////////////////////////////////
+function addParams($obj) {
+	global $mysqli;
+	
+    $set = "dev ='$obj->dev' ";
+
+    $de  = utf8_decode( $obj->dev_email ) ;
+    $set.= ",dev_email ='$de' ";
+
+    $se  = utf8_decode( $obj->saison_enc ) ;
+    $set.= ",saison_enc ='$se' ";
+
+    $sl  = utf8_decode( $obj->saison_last ) ;
+    $set.= ",saison_last = '$sl' ";
+
+    $df  = utf8_decode( $obj->dateforum ) ;
+    $set.= ",dateforum ='$df' ";
+
+    $le  = "tlicencies_".utf8_decode( $obj->tlicencies_encours ) ;
+    $set.= ",tlicencies_encours ='$le' ";
+
+    $ll  = "tlicencies_".utf8_decode( $obj->tlicencies_last ) ;
+    $set.= ",tlicencies_last ='$ll' ";
+
+    $lic = utf8_decode( $obj->tlicencies ) ;
+    $set.= ",tlicencies ='$lic' ";
+
+    $query = "UPDATE params SET $set  where id ='1' ";
+
+
+	$result = $mysqli->query( $query ) ;
+	if (!$result ) {
+		($dev) ? $err=$mysqli->error: $err="invalid query";
+		setError( $err );
+		return;
+    }
+    setSuccess("add params ");
+    return;
+    
+    
+}
+/////////////////////////////////////////////////////////////////////////////////////
+function validateParams($json) {
+	
+	
+	if ( ! array_key_exists('dev', $json) ) return false ;
+	if ( ! array_key_exists('dev_email', $json) ) return false ;
+	if ( ! array_key_exists('saison_enc', $json) ) return false ;
+	if ( ! array_key_exists('saison_last', $json) ) return false ;
+	if ( ! array_key_exists('dateforum', $json) ) return false ;
+	if ( ! array_key_exists('tlicencies_encours', $json) ) return false ;
+	if ( ! array_key_exists('tlicencies_last', $json) ) return false ;
+	if ( ! array_key_exists('tlicencies', $json) ) return false ;
+	
+	
+	return true;
+}
 ////////////////////////////////////////////////////////////////////////////////////
 function addTest() {
 	global $dev,$mysqli;
@@ -50,20 +152,20 @@ function addTest() {
     $cp = "35230";
     $sexe= "H";
     $date="2000-03-15";
-    $tel="06000000,06000001,06000002";
-    $email="test@test.fr,test2@test.fr,test3@test.fr";
+    $tel="0600000032,0600000033,0600000034";
+    $email="inscriptions@gmail.com";
 
 	$idlic = "TEST1234";
 	
-
+    $inscription = "1" ;
 	
 	$cat = CategorieFromDate( $date , $sexe ) ;
 	$rang = RangFromDate( $date , $sexe );
 
     $cat = strtolower( $cat );
 
-	$set="(id,nom,prenom,date,sexe,adresse,code_postal,ville,categorie,rang,type,email,telephone)" ;
-	$values="('$idlic','$nom','$prenom','$date','$sexe','$adresse','$cp','$ville','$cat','$rang','N','$email','$tel')";
+	$set="(id,nom,prenom,date,sexe,adresse,code_postal,ville,categorie,rang,type,email,telephone,inscription,date_inscription)" ;
+	$values="('$idlic','$nom','$prenom','$date','$sexe','$adresse','$cp','$ville','$cat','$rang','N','$email','$tel','$inscription',NOW() )";
     $query =" INSERT INTO  $tlicencies_encours  $set  VALUES  $values ";
 
 	$result = $mysqli->query( $query ) ;
@@ -200,7 +302,7 @@ function prepare() {
     $query=array();
     
    
-    $year = date('Y');
+    $year = date('Y') + 1 ;
     $table_new = "licencies_".$year;
 
     $query[]="CREATE TABLE $table_new LIKE $tlicencies_encours  ";
