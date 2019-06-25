@@ -101,7 +101,7 @@ $subject = "[Club de Natation] Confirmation de pre-inscription : ". strtoupper($
 
 
 $attachment = chunk_split(base64_encode($pdf->Output("inscription.pdf",'S')));
-// clé aléatoire de limite
+// clÃ© alÃ©atoire de limite
 $boundary = md5(uniqid(microtime(), TRUE));
 
 
@@ -122,57 +122,61 @@ $headers .= "Reply-to: ECN natation  <inscription@ecnatation.org>\r\n";
 $headers .= "From: ECN natation <inscription@ecnatation.org>\r\n";
 $headers .= "Bcc:ecninscription@gmail.com\r\n";
 $headers .= 'Content-Type: multipart/mixed;boundary='.$boundary."\r\n";
-$headers .= "\r\n";
+$headers .= "Content-Type: text/html; charset=\"utf-8\"\r\n";
+$headers .= "Content-Transfer-Encoding: 8bit\r\n";
+
 
 
 
 
 
 // Message
-$msg = 'Texte affiché par des clients mail ne supportant pas le type MIME.'."\r\n\r\n";
+$msg = 'Texte affichÃ© par des clients mail ne supportant pas le type MIME.'."\r\n\r\n";
 
 // Message HTML
 $msg .= '--'.$boundary."\r\n";
-$msg .= 'Content-type: text/html; charset=iso-8859-1'."\r\n\r\n";
+// $msg .= 'Content-type: text/html; charset=iso-8859-1'."\r\n\r\n";
+$msg .= 'Content-type: text/html; charset=utf8'."\r\n\r\n";
+
+
 $msg .= "<div>Bonjour ,<br><br>";
-$msg.="Merci d'avoir validé votre pré-inscription au club Espérance Chartres de Bretagne Natation pour la $saison. </br>"; 
-$msg.="<p>Vous devez maintenant <strong>imprimer le fichier inscription.pdf</strong> en pièce jointe,<strong>le signer et le déposer accompagné de votre règlement</strong>, dans la boite aux lettres du club, dans le hall de la piscine de la Conterie.</p>";
-$msg.="<p>Pour mémoire, le fichier <strong> inscription.pdf </strong> contient les documents suivants :</p>";
+$msg.="Merci d'avoir validÃ© votre prÃ©-inscription au club EspÃ©rance Chartres de Bretagne Natation pour la $saison. </br>"; 
+$msg.="<p>Vous devez maintenant <strong>imprimer le fichier inscription.pdf</strong> en piÃ¨ce jointe,<strong>le signer et le dÃ©poser accompagnÃ© de votre rÃ¨glement</strong>, dans la boite aux lettres du club, dans le hall de la piscine de la Conterie ou lors de nos sÃ©ances d'inscription.</p>";
+$msg.="<p>Pour mÃ©moire, le fichier <strong> inscription.pdf </strong> contient les documents suivants :</p>";
 
 $msg.="<ul>";
-$msg.="<li>le dossier d'inscription : à signer</li>";
-$msg.="<li>l'autorisation parentale : à compléter  pour les adhérents mineurs</li>";
-$msg.="<li>la fiche de liaison médicale : à compléter</li>";
-$msg.="<li>le règlement intérieur : à lire et à signer</li>";
+$msg.="<li>le dossier d'inscription : Ã  signer</li>";
+$msg.="<li>l'autorisation parentale : Ã  complÃ©ter  pour les adhÃ©rents mineurs</li>";
+$msg.="<li>la fiche de liaison mÃ©dicale : Ã  complÃ©ter et Ã  donner dans une enveloppe fermÃ©e</li>";
+$msg.="<li>le rÃ¨glement intÃ©rieur : Ã  lire et Ã  signer</li>";
 $msg.="</ul>";
 
 $msg.="<p><strong>Rappel des tarifs</strong></p>";
 $msg.="<ul>";
-$msg.="<li>1er enfant : 245 Euros(intégrant la carte Espérance)</li>";
-$msg.="<li>2ème enfant : 213 Euros</li>";
-$msg.="<li>3ème enfant : 193 Euros</li>";
-$msg.="<li>Master Elite (3 séances) : 296 Euros (intégrant la carte Espérance)</li>";
-$msg.="<li>Master Perf (2 séances) : 272 Euros (intégrant la carte Espérance)</li>";
-$msg.="<li>Master Pré-compétition (1 séance) : 250 Euros (intégrant la carte Espérance)</li>";
+$msg.="<li>1er enfant : 245 Euros(intÃ©grant la carte EspÃ©rance)</li>";
+$msg.="<li>2eme enfant : 213 Euros</li>";
+$msg.="<li>3eme enfant : 193 Euros</li>";
+$msg.="<li>Master Elite (3 sÃ©ances) : 296 Euros (intÃ©grant la carte EspÃ©rance)</li>";
+$msg.="<li>Master Perf (2 sÃ©ances) : 272 Euros (intÃ©grant la carte EspÃ©rance)</li>";
+$msg.="<li>Master PrÃ©-compÃ©tition (1 sÃ©ance) : 250 Euros (intÃ©grant la carte EspÃ©rance)</li>";
 $msg.="</ul>";
 
 
-//$msg.="<p>Merci de compléter et signer ces documents et les déposer avec le règlement et le certificat médical, dans une enveloppe à votre ";
-//$msg.="nom, dans la boite aux lettres du club dans le hall de la piscine de la Conterie.</p>";
-$msg.="<p>Le certificat médical doit préciser qu'il n'y a pas de ";
-$msg.="<strong><u>contre-indications à la pratique de la natation sportive en compétition.</u></strong></p></br>";
 
-$msg.="<p><strong>Attention : à partir du lundi 17 septembre, l'accès aux entrainements ne sera possible ";
-$msg.="qu'avec la carte d'accès au bassin délivrée suite à la réception du dossier complet.</strong></p>";
+$msg.="<p>Le certificat mÃ©dical doit prÃ©ciser qu'il n'y a pas de ";
+$msg.="<strong><u>contre-indications Ã  la pratique de la natation sportive en compÃ©tition.</u></strong></p></br>";
 
-$msg.="<p>Merci de déposer votre dossier complet dans une <strong> enveloppe en indiquant le nom,le prénom et l'année de naissance du licencié </strong> dans la boite aux lettres du club ";
-$msg.="située à l'intérieur du Hall de la piscine de la Conterie au plus tôt.<strong>Ne pas oublier d'indiquer le nom et le prénom du licencié au dos du chèque.</strong></p>"; 
+$msg.="<p><strong>Attention : Ã  partir du lundi 17 septembre, l'accÃ¨s aux entrainements ne sera possible ";
+$msg.="qu'avec la carte d'accÃ¨s au bassin dÃ©livrÃ©e suite Ã  la rÃ©ception du dossier complet.</strong></p>";
+
+$msg.="<p>Merci de dÃ©poser votre dossier complet dans une <strong> enveloppe en indiquant le nom,le prÃ©nom et l'annÃ©e de naissance du licenciÃ© </strong> dans la boite aux lettres du club ";
+$msg.="situÃ©e Ã  l'intÃ©rieur du Hall de la piscine de la Conterie au plus tÃ´t.<strong>Ne pas oublier d'indiquer le nom et le prÃ©nom du licenciÃ© au dos du chÃ¨que.</strong></p>"; 
 
 $msg.="<p>Suite au traitement de votre dossier complet, vous recevrez une notification par email. </p>";
 
 
 
-$msg.="Pour toute question sur l'inscription au club, veuillez envoyer un email à l'adresse inscription@ecnatation.org </br>";
+$msg.="Pour toute question sur l'inscription au club, veuillez envoyer un email Ã  l'adresse inscription@ecnatation.org </br>";
 $msg.="Sportivement<br>--<br>Le bureau de l'association<br>Web : http://ecnatation.fr </div>\r\n";
 
 
@@ -187,7 +191,7 @@ $msg .= $content."\r\n";
 $msg .= '--'.$boundary."\r\n";
 
 
-$response=utf8_encode ("$prenom $nom est pré-inscrit .<br>Veuillez ".
+$response=utf8_encode ("$prenom $nom est prÃ©-inscrit .<br>Veuillez ".
 "consulter votre boite e-mail.<br> Merci." );
 
 

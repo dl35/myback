@@ -96,7 +96,7 @@ function makepdf( $data  )
 ////////////////////////////////////////////////////////////////////////////////////////
 
 function sendmailpdf( $data  )	{
- global $dev ;   
+ global $dev , $dev_email ;   
 
 $pdf = makepdf($data);    
 $rappel = getRappel();
@@ -166,8 +166,8 @@ $msg .= '--'.$boundary."\r\n";
     }
  
     if( $dev ) {
-        $msg .= $email ."\n".$msg ;
-        $to ="denis.lesech@gmail.com";
+       
+        $to = $dev_email;
 
     } else {
 
