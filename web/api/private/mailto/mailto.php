@@ -41,8 +41,13 @@ switch ($method) {
 function mailto($data) {
 	global $dev,$mysqli;
 	
+	    $message  ="<html></head>";
+	    $message .="<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />";
+		$message .=$data->body;
+	    $message .="</head></html>";       
+
+		$body=$message;
 		
-		$body=$data->body;
 		$subject=$data->subject;
 		$from=$data->from;
 
@@ -126,7 +131,7 @@ function mailto($data) {
 function sendMail($to,$from,$subject,$body) {
 	global $dev,$dev_email;
 	
-	$dev = false ;
+	
 
 	$body .="<br>";
 	$body .="[from mailto]";
@@ -146,7 +151,10 @@ function sendMail($to,$from,$subject,$body) {
 	if( ! $dev ) {
 		$headers .= "Bcc:ecninscription@gmail.com\n";
 	}
-	$headers .= "Content-Type: text/html; charset=\"iso-8859-1\"";
+//	$headers .= "Content-Type: text/html; charset=\"iso-8859-1\"";
+	$headers .= "Content-Type: text/html; charset=\"utf-8\"";
+	$headers .='Content-Transfer-Encoding: 8bit';
+
 
 	if( $dev ) { 
 		$to=$dev_email;
