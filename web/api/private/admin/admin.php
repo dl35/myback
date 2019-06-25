@@ -270,10 +270,12 @@ function envoyer_mail( $nom, $prenom, $key, $email  ) {
         global $dev,$dev_email,$saison_enc;
       
         //    $dev =false ;
+      
+        $message  ="<html></head>";
+        $message .="<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />";
+        $message .=getMessageInsciption($nom,$prenom,$key);
 
-        $message=getMessageInsciption($nom,$prenom,$key);
-
-       
+        $message .="</head></html>";       
 
         $headers = "MIME-Version: 1.0\n";
         $headers .= "X-Sender: <www.ecnatation.org>\n";
@@ -284,8 +286,10 @@ function envoyer_mail( $nom, $prenom, $key, $email  ) {
         $headers .= "From: ECN natation <inscription@ecnatation.org>\n";
 
         if( ! $dev ) { $headers .= "Bcc:ecninscription@gmail.com\n";}
-        $headers .= "Content-Type: text/html; charset=iso-8859-1";
-        
+        // $headers .= "Content-Type: text/html; charset=\"iso-8859-1\"";
+        $headers .= "Content-Type: text/html; charset=\"utf-8\"";
+        $headers .='Content-Transfer-Encoding: 8bit';
+
         $subject ="[Club de Natation] Inscription  $saison_enc : ".$prenom." ".$nom;
        
         if( $dev ) {

@@ -146,7 +146,7 @@ function sendMail($to,$from,$subject,$body) {
 	if( ! $dev ) {
 		$headers .= "Bcc:ecninscription@gmail.com\n";
 	}
-	$headers .= "Content-Type: text/html; charset=iso-8859-1";
+	$headers .= "Content-Type: text/html; charset=\"iso-8859-1\"";
 
 	if( $dev ) { 
 		$to=$dev_email;
