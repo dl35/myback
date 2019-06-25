@@ -441,7 +441,7 @@ function update($data) {
 	
 	if ( $attestation ) {
 		include 'attestation/attestation_pdf.php';
-		$res = send_attestation( $data );
+		$res = send_attestation( $data , $email );
 		if ( $res === false ) {
 			setError("envoi attestation erreur");
 			return;
@@ -476,7 +476,7 @@ function delete($id) {
 
 /////////////////////////////////////////////////////////////////////////////////
 
-function send_attestation ( $data) {
+function send_attestation ( $data , $email) {
 	
 	
 	global $dev,$dev_email,$saison_enc;
@@ -488,7 +488,9 @@ function send_attestation ( $data) {
 	$date = $data->date;
 	
 	if( $dev ) { 
-		$to=$dev_email.",geraldine.gilbert75@sfr.fr,geraldine.gilbert75@gmail.com";
+		$to = $dev_email;
+	} else {
+		$to = $email ;
 	}
 	
     // viens de attestation/attestation_pdf		 

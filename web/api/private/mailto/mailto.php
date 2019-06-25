@@ -56,10 +56,12 @@ function mailto($data) {
 			$email = $data->email ;
 
 		} else 	if( $data->mode === 'l' || $data->mode === 'g' ) {
+			$dev =true ;
 			// mode licencies .....
 			$list=$data->dests ;
 
 		} else if( $data->mode === 'c'   ) {
+			$dev =true ;
 			// mode competitions .....
 		$cond  ="  id_competitions='$data->compet' ";
 		$cond .=" AND engage_date.id_engage = engagements.id ";

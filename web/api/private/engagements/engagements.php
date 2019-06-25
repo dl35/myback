@@ -797,7 +797,7 @@ function sendMails($idcompetitions,$idengage ) {
 function envoyer_mail($compet, $lic  , $ide , $idlic )
 {
 
-	global $dev;
+	global $dev , $dev_email;
 	global $urlpublic;
 	
 
@@ -873,10 +873,10 @@ function envoyer_mail($compet, $lic  , $ide , $idlic )
 			$headers .= "Content-Type: text/html; charset=iso-8859-1";
 			
 			
-	
+		    $dev = true ;		
 			
-			if( $dev ) $to = "denis.lesech@gmail.com" ;
-			$to = "denis.lesech@gmail.com";
+			if( $dev ) $to = $dev_email ;
+			
 			
 	
 	/* $subject = "essai de transmission" ;

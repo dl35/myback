@@ -77,17 +77,23 @@ function makepdf( $data  )
 	    $pdf->addPage(); 
 	 	$tplIdx = $pdf->importPage(4); 
 	    $pdf->useTemplate($tplIdx,0,0,210,297);
-	   
-	    
-	     $pdf->addPage(); 
+	   	    
+	    $pdf->addPage(); 
 	 	$tplIdx = $pdf->importPage(5); 
 	    $pdf->useTemplate($tplIdx,0,0,210,297);
-	   
+       
+        $pdf->addPage(); 
+	 	$tplIdx = $pdf->importPage(6); 
+        $pdf->useTemplate($tplIdx,0,0,210,297);
+        
+        $pdf->addPage(); 
+	 	$tplIdx = $pdf->importPage(7); 
+	    $pdf->useTemplate($tplIdx,0,0,210,297);
 	    
 	    
-    $pdf->setCompression(true); 
+        $pdf->setCompression(true); 
  
-    return $pdf ;        
+        return $pdf ;        
 
 }
 

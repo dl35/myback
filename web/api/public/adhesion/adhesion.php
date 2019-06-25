@@ -282,8 +282,8 @@ function add($data) {
 	$data->categorie = $cat ;
 	$data->rang = $rang ;
 
-	$set="(id,nom,prenom,date,sexe,adresse,code_postal,ville,email,telephone,inscription,date_inscription,categorie,rang" ;
-	$values="('$id','$data->nom','$data->prenom','$data->date','$data->sexe','$data->adresse','$data->cp','$data->ville','$email','$tel','1',NOW(),'$cat','$rang' ";
+	$set="(id,nom,prenom,date,sexe,adresse,code_postal,ville,email,telephone,inscription,date_inscription,categorie,rang,type" ;
+	$values="('$id','$data->nom','$data->prenom','$data->date','$data->sexe','$data->adresse','$data->cp','$data->ville','$email','$tel','1',NOW(),'$cat','$rang' ,'N' ";
 	$set.=") ";
 	$values.=") ";
 

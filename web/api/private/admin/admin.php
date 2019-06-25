@@ -203,19 +203,21 @@ function sendInscriptions() {
     global $dev,$mysqli ;
     
 
-    /*    $query = "SELECT * FROM $tlicencies_encours WHERE "
+    $query = "SELECT * FROM $tlicencies_encours WHERE "
                 ." categorie IS NOT NULL AND  date_inscription IS NULL "
                 ."  AND inscription = '0' ORDER BY id  "; 
-    */
+    
              
     if ( $dev ) {
         $query = "SELECT * FROM $tlicencies_encours WHERE "
                  ." categorie IS NOT NULL  "
                  ."  AND (  nom = 'test' )  ORDER BY id  "; 
-               $query = "SELECT * FROM $tlicencies_encours WHERE "
+       
+       /*          $query = "SELECT * FROM $tlicencies_encours WHERE "
                  ." categorie IS NOT NULL  "
                  ."  AND (  id IN (  'GIL23583' )  )  ORDER BY id  ";
             // SIP84172 ,  SIP84172 , KEL62316
+        */    
 
     }
 
@@ -285,7 +287,7 @@ function envoyer_mail( $nom, $prenom, $key, $email  ) {
         $headers .= "From: ECN natation <inscription@ecnatation.org>\n";
 
         if( ! $dev ) { $headers .= "Bcc:ecninscription@gmail.com\n";}
-        // $headers .= "Content-Type: text/html; charset=\"iso-8859-1\"";
+              
         $headers .= "Content-Type: text/html; charset=\"utf-8\"";
         $headers .='Content-Transfer-Encoding: 8bit';
 
