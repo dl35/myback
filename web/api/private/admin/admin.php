@@ -271,13 +271,13 @@ function envoyer_mail( $nom, $prenom, $key, $email  ) {
       
         //    $dev =false ;
       
-        $message  ="<html></head>";
-        $message .="<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />";
+        $message  ="<html><head>";
+        $message .="<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" /></head><body>";
         $message .=getMessageInsciption($nom,$prenom,$key);
 
-        $message .="</head></html>";       
+        $message .="</body></html>";       
 
-        $headers = "MIME-Version: 1.0\n";
+        $headers  = "MIME-Version: 1.0\n";
         $headers .= "X-Sender: <www.ecnatation.org>\n";
         $headers .= "X-Mailer: PHP\n";
         $headers .= "X-auth-smtp-user: webmaster@ecnatation.org \n";

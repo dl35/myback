@@ -41,13 +41,13 @@ switch ($method) {
 function mailto($data) {
 	global $dev,$mysqli;
 	
-	    $message  ="<html></head>";
-	    $message .="<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />";
+	    $message  ="<html><head>";
+	    $message .="<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" /></head><body>";
 		$message .=$data->body;
-	    $message .="</head></html>";       
+	    $message .="</body></html>";       
 
 		$body=$message;
-		
+
 		$subject=$data->subject;
 		$from=$data->from;
 
