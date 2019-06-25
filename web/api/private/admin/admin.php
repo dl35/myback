@@ -214,7 +214,7 @@ function sendInscriptions() {
                  ."  AND (  nom = 'test' )  ORDER BY id  "; 
                $query = "SELECT * FROM $tlicencies_encours WHERE "
                  ." categorie IS NOT NULL  "
-                 ."  AND (  id IN ( 'SIP84172' , 'GIL23583' , 'KEL62316')  )  ORDER BY id  ";
+                 ."  AND (  id IN (  'GIL23583' )  )  ORDER BY id  ";
             // SIP84172 ,  SIP84172 , KEL62316
 
     }
@@ -269,7 +269,6 @@ function splitemail($email){
 function envoyer_mail( $nom, $prenom, $key, $email  ) {
         global $dev,$dev_email,$saison_enc;
       
-        //    $dev =false ;
       
         $message  ="<html><head>";
         $message .="<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" /></head><body>";

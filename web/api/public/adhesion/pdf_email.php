@@ -122,8 +122,8 @@ $headers .= "Reply-to: ECN natation  <inscription@ecnatation.org>\r\n";
 $headers .= "From: ECN natation <inscription@ecnatation.org>\r\n";
 $headers .= "Bcc:ecninscription@gmail.com\r\n";
 $headers .= 'Content-Type: multipart/mixed;boundary='.$boundary."\r\n";
-$headers .= "Content-Type: text/html; charset=\"utf-8\"\r\n";
-$headers .= "Content-Transfer-Encoding: 8bit\r\n";
+// $headers .= "Content-Type: text/html; charset=\"utf-8\"\r\n";
+// $headers .= "Content-Transfer-Encoding: 8bit\r\n";
 
 
 
@@ -138,6 +138,8 @@ $msg .= '--'.$boundary."\r\n";
 // $msg .= 'Content-type: text/html; charset=iso-8859-1'."\r\n\r\n";
 $msg .= 'Content-type: text/html; charset=utf8'."\r\n\r\n";
 
+$msg  ="<html><head>";
+$msg .="<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" /></head><body>";
 
 $msg .= "<div>Bonjour ,<br><br>";
 $msg.="Merci d'avoir validé votre pré-inscription au club Espérance Chartres de Bretagne Natation pour la $saison. </br>"; 
@@ -178,7 +180,7 @@ $msg.="<p>Suite au traitement de votre dossier complet, vous recevrez une notifi
 
 $msg.="Pour toute question sur l'inscription au club, veuillez envoyer un email à l'adresse inscription@ecnatation.org </br>";
 $msg.="Sportivement<br>--<br>Le bureau de l'association<br>Web : http://ecnatation.fr </div>\r\n";
-
+$msg .="</body></html>";  
 
 
 
