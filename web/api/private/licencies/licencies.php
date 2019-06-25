@@ -412,7 +412,7 @@ function update($data) {
 	
 	
 	 $attestation=false;
-	// $data->valide = false ;
+	 
 	
 	if ( $data->valide === false && isset($data->cert_medical)  &&  $data->cert_medical && isset($data->paye)  &&  $data->paye )  {
 		
@@ -421,7 +421,7 @@ function update($data) {
 		$attestation=true;
 	}
 	
-//	$attestation=true;
+	
 	
 	$id = $data->id ;
 	
@@ -487,9 +487,11 @@ function send_attestation ( $data) {
 	$cotisation = $data->cotisation;
 	$date = $data->date;
 	
-	if( $dev ) $to=$dev_email;
+	if( $dev ) { 
+		$to=$dev_email.",geraldine.gilbert75@sfr.fr,geraldine.gilbert75@gmail.com";
+	}
 	
-		
+    // viens de attestation/attestation_pdf		 
 	$pdf=doPdf($nom,$prenom,$date,$cotisation,$saison_enc);
 	$pdf->setCompression(true);
 	
@@ -519,7 +521,7 @@ function send_attestation ( $data) {
 	$msg = 'Texte affiché par des clients mail ne supportant pas le type MIME.'."\r\n\r\n";
 	
 	$msg .= '--'.$boundary."\r\n";
-	$msg .= 'Content-type: text/html; charset=iso-8859-1'."\r\n\r\n";
+	$msg .= "Content-type: text/html; charset=UTF-8\r\n\r\n";
 	$msg .= "<div>Bonjour ,<br><br>";
 	$msg.="Pour information, le dossier d'inscription de <strong>$prenom $nom</strong> au club Espérance Chartres de Bretagne Natation pour la $saison_enc a été traité.";
 	$msg.="<p>L'attestation d'inscription est en pièce jointe.</p>";
