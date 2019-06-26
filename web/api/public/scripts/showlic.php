@@ -1,5 +1,5 @@
 <?php 
-header('Content-Type: text/html; charset=ISO-8859-1');
+// header('Content-Type: text/html; charset=ISO-8859-1');
 include_once '../../common/config.php';
 
 
@@ -106,15 +106,21 @@ $tab="";
 $i=0;
 while($row = $result->fetch_assoc() ) { 
 	
+$nom=utf8_encode($row['nom']);
+$prenom=utf8_encode($row['prenom']);
+$cate=strtoupper( $row['categorie'] );
+$rang=$row['rang'];
+    
+if( empty($cate) ) continue;
+
 
 $i++;
 
 
 
-$nom=$row['nom'];
-$prenom=$row['prenom'];
-$cate=strtoupper( $row['categorie'] );
-$rang=$row['rang'];
+
+
+
 
 $tab.="<tr><td>$i</td><td>".$nom."</td><td>".$prenom."</td><td>".ucfirst($cate)."</td><td>".$rang."</td></tr>";
 
