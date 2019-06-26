@@ -1,15 +1,15 @@
 <?php 
 header('Content-Type: text/html; charset=ISO-8859-1');
+include_once '../../common/config.php';
 
-session_start();
-include_once '../common/common.php';
-include 'table.php';
 
 ?>
-
-<input type='button'  class="quitte"  value="Stats"  onclick="javscript:quitte_showlic();" />
-
-<br></br>
+<center>
+<div class="head_mini_gray_"><label style='display:none'></label></div>
+<br>
+<input type='button'  class="quitte"  value="Quitte"  onclick="javscript:quitte_showlic();" />
+</center>
+<br>
 <div style="width:400px;height:400px;overflow: auto; margin-left: auto; margin-right: auto;text-align: center"  >
 <?php
 
@@ -72,22 +72,31 @@ $wh.=" AND categorie LIKE '$cat%' ";
 
 
 
-$db = mysql_connect($host, $user, $passwd)
-or die("Connection Error: " . mysql_error());
+$mysqli = new mysqli ( $host , $base_user, $base_passwd, $base );
 
 
-mysql_select_db($base) or die("Error connecting to db.");
+if ( $mysqli->connect_errno ) {
+	($dev) ? $err=$mysqli->connect_error: $err="invalid connect";
+	echo "error " ;
+	return ;
+	
+}
 
  
 
 
-$SQL="SELECT nom,prenom,type,categorie,rang ".
-"FROM $tablelic WHERE  ".$wh.
-"ORDER BY $tablelic.nom, $tablelic.prenom ";
+$query="SELECT nom,prenom,type,categorie,rang ".
+"FROM $tlicencies_encours WHERE  ".$wh.
+"ORDER BY $tlicencies_encours.nom, $tlicencies_encours.prenom ";
 
 
 
-$result = mysql_query( $SQL ) or die("execute query.".mysql_error()); 
+$result = $mysqli->query( $query ) ;
+if (!$result) {
+    ($dev) ? $err=$mysqli->error: $err="invalid query";
+    echo $err  ;
+    return;
+}  
 
 
 
@@ -95,7 +104,7 @@ echo "<br/>";
 echo "<table style='width:100%'  class='tshowlic'  >";
 $tab="";
 $i=0;
-while($row = mysql_fetch_array($result,MYSQL_ASSOC)) { 
+while($row = $result->fetch_assoc() ) { 
 	
 
 $i++;
@@ -104,7 +113,7 @@ $i++;
 
 $nom=$row['nom'];
 $prenom=$row['prenom'];
-$cate=$row['categorie'];
+$cate=strtoupper( $row['categorie'] );
 $rang=$row['rang'];
 
 $tab.="<tr><td>$i</td><td>".$nom."</td><td>".$prenom."</td><td>".ucfirst($cate)."</td><td>".$rang."</td></tr>";
