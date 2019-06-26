@@ -171,61 +171,96 @@ function update($id ,$data) {
 	global $tlicencies_encours;
 	global $mysqli ;
 	
-	
+
+
 	$email=$data->email1.','.$data->email2.','.$data->email3 ;
+
 	$tel=$data->tel1.','.$data->tel2.','.$data->tel3 ;
 	
-	$cat = CategorieFromDate( $data->date , $data->sexe ) ;
+	$categorie = CategorieFromDate( $data->date , $data->sexe ) ;
 	$rang = RangFromDate( $data->date , $data->sexe );
 
-	$data->categorie = $cat ;
-	$data->rang = $rang ;
-
-
-	$set=" SET ";
-	
-	
-	$set.="nom= '$data->nom' , ";
-	$set.="prenom= '$data->prenom' , ";
-	
-	$set.="date= '$data->date' , ";
-	$set.="sexe= '$data->sexe' , ";
-	$set.="adresse= '$data->adresse' , ";
-	$set.="code_postal= '$data->cp' , ";
-	$set.="ville= '$data->ville' , ";
-	$set.="email= '$email' , ";
-	$set.="telephone= '$tel' , ";
-	
-	$set.="inscription= '1', ";
-	$set.="date_inscription= NOW() , ";
-
-	$set.="categorie= '$cat', ";
-	$set.="rang= '$rang' ";
-
-	
-	$set.=" WHERE id = '$id'  " ;
-	
-	$query = "UPDATE  $tlicencies_encours  $set  ";
-	
-
-
-	
-	$result = $mysqli->query( $query ) ;
-	if (!$result ) {
-		http_response_code(404);
-		($dev) ? $err=$mysqli->error: $err="invalid query";
-		setError( $err );
-		return ;
+	$params=array();
 		
+	$set = " date_inscription = NOW() , inscription = '1', type = 'R' , nom= ? " ;
+	$params[]= ( $data->nom );
+	$start="s";
+
+	$set .= ",prenom = ? " ;
+	$params[]= ( $data->prenom );
+	$start.="s";
+
+	$set .= ",date = ? " ;
+	$params[]= ( $data->date );
+	$start.="s";
+
+	$set .= ",sexe = ? " ;
+	$params[]= ( $data->sexe );
+	$start.="s";
+
+	$set .= ",adresse = ? " ;
+	$params[]= ( $data->adresse );
+	$start.="s";
+
+	$set .= ",code_postal = ? " ;
+	$params[]= ( $data->cp );
+	$start.="s";
+
+	$set .= ",ville = ? " ;
+	$params[]= ( $data->ville );
+	$start.="s";
+
+	$set .= ",email = ? " ;
+	$params[]= ( $email );
+	$start.="s";
+
+	$set .= ",telephone = ? " ;
+	$params[]= ( $tel );
+	$start.="s";
+
+	$set .= ",categorie = ? " ;
+	$params[]= ( $categorie );
+	$start.="s";
+
+	$set .= ",rang = ? " ;
+	$params[]= ( $rang );
+	$start.="s";
+
+	if ( $categorie === "JE" && $rang === "1" ) {
+		$set .= ",niveau = ? " ;
+		$params[]= 'dep';
+		$start.="s";	
+	} 
+
+	$params[]= $id;
+	$start.="s";
+
+	$query = "UPDATE $tlicencies_encours SET $set WHERE id = ? ";
+
+	$stmt = $mysqli->prepare( $query );
+	$stmt->bind_param( $start  ,...$params );
+
+
+	$result = $stmt->execute();
+	if (!$result) {
+		($dev) ? $err=$stmt->error : $err="invalid query";
+		$stmt->close();
+		setError( $err );
+		return;
 	}
 	
+	
+	$stmt->close();
+
+
 	include 'makePdf.php' ;
 	$ret =  sendmailpdf( $data );
+
 	
 	if( $ret ) {
 		setSuccess("Modification, Email ok");
 	} else {
-		setSuccess("error");
+		setError("Modification, Error");
 	}
 
 	
@@ -238,8 +273,10 @@ function add($data) {
 	global $dev;
 	global $tlicencies_encours;
 	global $mysqli;
-	
-	
+		
+
+
+
 	$query=" SELECT id FROM $tlicencies_encours ";
 
 	$result = $mysqli->query( $query ) ;
@@ -276,34 +313,126 @@ function add($data) {
 	$email=$data->email1.','.$data->email2.','.$data->email3 ;
 	$tel=$data->tel1.','.$data->tel2.','.$data->tel3 ;
 
-	$cat = CategorieFromDate($data->date, $data->sexe);
+	$categorie = CategorieFromDate($data->date, $data->sexe);
 	$rang = RangFromDate($data->date, $data->sexe );	
 
-	$data->categorie = $cat ;
-	$data->rang = $rang ;
+	
 
-	$set="(id,nom,prenom,date,sexe,adresse,code_postal,ville,email,telephone,inscription,date_inscription,categorie,rang,type" ;
-	$values="('$id','$data->nom','$data->prenom','$data->date','$data->sexe','$data->adresse','$data->cp','$data->ville','$email','$tel','1',NOW(),'$cat','$rang' ,'N' ";
-	$set.=") ";
-	$values.=") ";
+	$params=array();
 
-	$query=" INSERT INTO  $tlicencies_encours  $set  VALUES  $values ";
 
-	$result = $mysqli->query( $query ) ;
-	if (!$result ) {
-		($dev) ? $err=$mysqli->error: $err="invalid query";
+	$set = "id" ;
+	$params[]= $id;
+	$start ="s";
+	$inc="?";
+
+	
+	$set .= ",inscription" ;
+	$params[]= '1';
+	$start .="s";
+	$inc.=",?";
+
+	$set .= ",type" ;
+	$params[]= 'N';
+	$start .="s";
+	$inc.=",?";
+
+
+	$set .= ",nom" ;
+	$params[]= ( $data->nom );
+	$start .="s";
+	$inc.=",?";
+
+	$set .= ",prenom" ;
+	$params[]= ( $data->prenom );
+	$start .="s";
+	$inc.=",?";
+
+	$set .= ",date" ;
+	$params[]= ( $data->date );
+	$start.="s";
+	$inc.=",?";
+
+	$set .= ",sexe" ;
+	$params[]= ( $data->sexe );
+	$start.="s";
+	$inc.=",?";
+
+	$set .= ",adresse" ;
+	$params[]= ( $data->adresse );
+	$start.="s";
+	$inc.=",?";
+
+	$set .= ",code_postal" ;
+	$params[]= ( $data->cp );
+	$start.="s";
+	$inc.=",?";
+
+	$set .= ",ville" ;
+	$params[]= ( $data->ville );
+	$inc.=",?";
+	$start.="s";
+
+	$set .= ",email" ;
+	$params[]= ( $email );
+	$start.="s";
+	$inc.=",?";
+
+	$set .= ",telephone" ;
+	$params[]= ( $tel );
+	$start.="s";
+	$inc.=",?";
+
+	$set .= ",categorie" ;
+	$params[]= ( $categorie );
+	$start.="s";
+	$inc.=",?";
+
+	$set .= ",rang" ;
+	$params[]= ( $rang );
+	$start.="s";
+	$inc.=",?";
+
+	if ( $categorie === "JE" && $rang === "1" ) {
+		$set .= ",niveau" ;
+		$inc .= ",'dep'";
+	} 
+
+
+	$set .= ",date_inscription" ;
+	$inc.=",NOW()";
+
+
+	$set ="(".$set.")";
+	$inc ="(".$inc.")";
+
+	$query=" INSERT INTO  $tlicencies_encours  $set  VALUES  $inc ";
+
+
+	$stmt = $mysqli->prepare( $query );
+	$stmt->bind_param( $start  ,...$params );
+
+
+	$result = $stmt->execute();
+	if (!$result) {
+		($dev) ? $err=$stmt->error : $err="invalid query ";
+		$stmt->close();
 		setError( $err );
 		return;
 	}
+	
+	
+	$stmt->close();
 	
 
 	include 'makePdf.php' ;
 	$ret =  sendmailpdf( $data );
 	
+
 	if( $ret ) {
 		setSuccess("Ajout, email ok");
 	} else {
-		setSuccess("Mail erreur");
+		setError("Mail erreur");
 	}
 
 	
