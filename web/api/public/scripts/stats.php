@@ -1,7 +1,4 @@
 <?php
-header('Content-Type: text/html; charset=ISO-8859-1');
-
-// session_start();
 include_once '../../common/config.php';
 
 
@@ -23,7 +20,6 @@ if ( $mysqli->connect_errno ) {
 $result = $mysqli->query("SELECT COUNT(*) AS count FROM $tlicencies_encours WHERE categorie IS NOT NULL  " );
 $row = $result->fetch_assoc();
 $count = $row['count']; 
-
 
 
 
@@ -76,7 +72,7 @@ $valide=$row['valide'];
 
 $type=$row['type'];
 $rang=$row['rang'];
-$categorie=$row['categorie'];
+$categorie=strtoupper( $row['categorie'] );
 $inscription=$row['inscription'];
 $cotisation=$row['cotisation'];
 
@@ -140,11 +136,12 @@ $stats["$categorie"] ["N"] ++;
 }
 
 
+
 function getTotal($indice , $all=false ) {
 	
 global $stats;
 	
-$cat =array("AV","JE","JU","JU","SE","MA");	
+$cat =array("AV","JE","JU","SE","MA");	
 $total=0;	
 foreach (  $cat as $val ) {
 
@@ -165,6 +162,7 @@ return $total;
 ?>
 
 <html>
+<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <head>
 <style type="text/css">
 
@@ -200,7 +198,7 @@ font-family: sans-serif;
     margin-right: auto ;
     left:0;
     right:0;
-  background-image:url(../ressources/images/banner_mini_gray.png);
+  background-image:url(banner_mini_gray.png);
  
 }
 
@@ -220,7 +218,7 @@ font:bold 11px arial, sans-serif;
 
 
 </style>
-<script src="../ressources/js/jquery-1.4.2.min.js" type="text/javascript"></script>
+<script src="js/jquery-1.4.2.min.js" type="text/javascript"></script>
 
 <script type="text/javascript">
 
@@ -248,17 +246,11 @@ function show_lic( cat , type , ins) {
 </script>
 </head>
 <body>
-<br></br>
+<br>
 <div id="stats"  >
-<?php    if ( ! isset($_GET['include'] )  ) {?>
-
 <div class="head_mini_gray_"><label style='display:none'>ins</label></div>
+<br>
 
-<br></br>
-<?php   } else { ?>
-
-<input type='button'  class="quitte"  value="Quitter"  onclick="javscript:quitte();" />
-<?php }?>
 <table  align="center">
 <tr><td>
 <table BORDER>
