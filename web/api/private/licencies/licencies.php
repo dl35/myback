@@ -110,6 +110,16 @@ function validateObject($json) {
 	if ( ! array_key_exists('telephone2', $json) ) return false ;
 	if ( ! array_key_exists('telephone3', $json) ) return false ;
 	
+
+
+	$json->nom = utf8_decode($json->nom);
+	$json->prenom = utf8_decode($json->prenom);
+	$json->adresse = utf8_decode($json->adresse);
+	$json->ville = utf8_decode($json->ville);
+	$json->code_postal = utf8_decode($json->code_postal);
+
+
+
 	
 	$d = new DateTime( $json->date );
 	$df =$d->format('Y-m-d');
@@ -211,8 +221,6 @@ function get($id=false) {
 	
 }
 
-
-
 ////////////////////////////////////////////////////////////////////////////////////////////////
 function add($data) {
 	
@@ -222,18 +230,13 @@ function add($data) {
 
 	$idlic = createKeyCode( $data->nom , $data->prenom) ;
 	
-	$nom = utf8_decode($data->nom);
-	$prenom = utf8_decode($data->prenom);
-	$adresse = utf8_decode($data->adresse);
-	$ville = utf8_decode($data->ville);
+
 	
-	$cat = CategorieFromDate( $data->date , $data->sexe ) ;
+	$categorie = CategorieFromDate( $data->date , $data->sexe ) ;
 	$rang = RangFromDate( $data->date , $data->sexe );
 
-	$set="(id,nom,prenom,date,sexe,adresse,code_postal,ville,categorie,rang,type,inscription,date_inscription" ;
-	$values="('$idlic','$nom','$prenom','$data->date','$data->sexe','$adresse','$data->code_postal','$ville','$cat','$rang','N','1',NOW()";
+		
 	
-	$set.=",email";
 	$v="";
 	if ( strlen($data->email1) > 0 )
 	{
@@ -253,10 +256,9 @@ function add($data) {
 		$v.="$data->email3";
 	}
 	
-	$values.=",'$v'";
+	$email = $v ;
 	
 	
-	$set.=",telephone";
 	$v="";
 	if ( strlen($data->telephone1) > 0 )
 	{
@@ -276,18 +278,109 @@ function add($data) {
 		$v.="$data->telephone3";
 	}
 	
-	$values.=",'$v'";
-
-	$set.=") ";
-	$values.=") ";
-	$query =" INSERT INTO  $tlicencies_encours  $set  VALUES  $values ";
+	$telephone = $v ;
 	
-	$result = $mysqli->query( $query ) ;
-	if (!$result ) {
-		($dev) ? $err=$mysqli->connect_error: $err="invalid query";
+	$params=array();
+
+	$set = "id" ;
+	$params[]= $idlic;
+	$start ="s";
+	$inc="?";
+
+	$set .= ",inscription" ;
+	$params[]= '1';
+	$start .="s";
+	$inc.=",?";
+
+	$set .= ",type" ;
+	$params[]= 'N';
+	$start .="s";
+	$inc.=",?";
+
+	$set .= ",nom" ;
+	$params[]= ( $data->nom );
+	$start .="s";
+	$inc.=",?";
+
+	$set .= ",prenom" ;
+	$params[]= ( $data->prenom );
+	$start .="s";
+	$inc.=",?";
+
+	$set .= ",date" ;
+	$params[]= ( $data->date );
+	$start.="s";
+	$inc.=",?";
+
+	$set .= ",sexe" ;
+	$params[]= ( $data->sexe );
+	$start.="s";
+	$inc.=",?";
+
+	$set .= ",adresse" ;
+	$params[]= ( $data->adresse );
+	$start.="s";
+	$inc.=",?";
+
+	$set .= ",code_postal" ;
+	$params[]= ( $data->code_postal );
+	$start.="s";
+	$inc.=",?";
+
+	$set .= ",ville" ;
+	$params[]= ( $data->ville );
+	$inc.=",?";
+	$start.="s";
+
+	$set .= ",email" ;
+	$params[]= ( $email );
+	$start.="s";
+	$inc.=",?";
+
+	$set .= ",telephone" ;
+	$params[]= ( $telephone );
+	$start.="s";
+	$inc.=",?";
+
+	$set .= ",categorie" ;
+	$params[]= ( $categorie );
+	$start.="s";
+	$inc.=",?";
+
+	$set .= ",rang" ;
+	$params[]= ( $rang );
+	$start.="s";
+	$inc.=",?";
+
+	if ( $categorie === "JE" && $rang === "1" ) {
+		$set .= ",niveau" ;
+		$inc .= ",'dep'";
+	} 
+
+
+	$set .= ",date_inscription" ;
+	$inc.=",NOW()";
+
+	$set ="(".$set.")";
+	$inc ="(".$inc.")";
+
+	$query=" INSERT INTO  $tlicencies_encours  $set  VALUES  $inc ";
+
+
+	$stmt = $mysqli->prepare( $query );
+	$stmt->bind_param( $start  ,...$params );
+
+
+	$result = $stmt->execute();
+	if (!$result) {
+		($dev) ? $err=$stmt->error : $err="invalid query ";
+		$stmt->close();
 		setError( $err );
 		return;
 	}
+	
+	
+	// $stmt->close();
 	
 	
 	
@@ -296,8 +389,432 @@ function add($data) {
 	
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
+function update2($data) {
+	
+	global $dev,$mysqli;
+	global $tlicencies_encours;
+	
+
+	$email=$data->email1.','.$data->email2.','.$data->email3 ;
+
+	$telephone=$data->tel1.','.$data->tel2.','.$data->tel3 ;
+	
+	$categorie = CategorieFromDate( $data->date , $data->sexe ) ;
+	$rang = RangFromDate( $data->date , $data->sexe );
+
+	$params=array();
+		
+	$set = "nom = ? " ;
+	$params[]= ( $data->nom );
+	$start="s";
+
+	$set .= ",prenom = ? " ;
+	$params[]= ( $data->prenom );
+	$start.="s";
+
+	$set .= ",date = ? " ;
+	$params[]= ( $data->date );
+	$start.="s";
+
+	$set .= ",sexe = ? " ;
+	$params[]= ( $data->sexe );
+	$start.="s";
+
+	$set .= ",adresse = ? " ;
+	$params[]= ( $data->adresse );
+	$start.="s";
+
+	$set .= ",code_postal = ? " ;
+	$params[]= ( $data->cp );
+	$start.="s";
+
+	$set .= ",ville = ? " ;
+	$params[]= ( $data->ville );
+	$start.="s";
+
+	$set .= ",email = ? " ;
+	$params[]= ( $email );
+	$start.="s";
+
+	$set .= ",telephone = ? " ;
+	$params[]= ( $telephone );
+	$start.="s";
+
+	$set .= ",categorie = ? " ;
+	$params[]= ( $categorie );
+	$start.="s";
+
+	$set .= ",rang = ? " ;
+	$params[]= ( $rang );
+	$start.="s";
+
+	if ( isset( $data->type ) ) {
+		$set .= ",type = ? " ;
+		$params[]= ( $data->type );
+		$start.="s";
+	} else {
+		$set .= ",type = ? " ;
+		$params[]= NULL;
+		$start.="s";
+	}
+
+	if ( isset( $data->officiel ) ) {
+		$set .= ",officiel = ? " ;
+		$params[]= ( $data->officiel );
+		$start.="s";
+	} else {
+		$set .= ",officiel = ? " ;
+		$params[]= NULL;
+		$start.="s";
+	}
+
+	if ( isset( $data->licence ) ) {
+		$set .= ",licence = ? " ;
+		$params[]= ( $data->licence );
+		$start.="s";
+	} else {
+		$set .= ",licence = ? " ;
+		$params[]= NULL;
+		$start.="s";
+	}
+
+	if ( isset( $data->commentaires ) ) {
+		$set .= ",licence = ? " ;
+		$params[]= ( utf8_decode($data->commentaires) );
+		$start.="s";
+	} else {
+		$set .= ",commentaires = ? " ;
+		$params[]= NULL;
+		$start.="s";
+	}
+	
+	if ( isset( $data->entr ) ) {
+		$set .= ",entr = ? " ;
+		$params[]= '1';
+		$start.="s";
+	} else {
+		$set .= ",entr = ? " ;
+		$params[]= '0';
+		$start.="s";
+	}
+	
+	if ( isset( $data->cotisation ) ) {
+		$set .= ",cotisation = ? " ;
+		$params[]= $data->cotisation ;
+		$start.="s";
+	} else {
+		$set .= ",cotisation = ? " ;
+		$params[]= NULL;
+		$start.="s";
+	}
+
+	if ( isset( $data->carte ) ) {
+		$set .= ",carte = ? " ;
+		$params[]= $data->carte ;
+		$start.="s";
+	} else {
+		$set .= ",carte = ? " ;
+		$params[]= NULL;
+		$start.="s";
+	}
+	
+	if ( isset( $data->num_carte ) ) {
+		$set .= ",num_carte = ? " ;
+		$params[]= $data->num_carte ;
+		$start.="s";
+	} else {
+		$set .= ",num_carte = ? " ;
+		$params[]= NULL;
+		$start.="s";
+	}
+
+	if ( isset( $data->banque ) ) {
+		$set .= ",banque = ? " ;
+		$params[]= $data->banque ;
+		$start.="s";
+	} else {
+		$set .= ",banque = ? " ;
+		$params[]= NULL;
+		$start.="s";
+	}
+
+	if ( isset( $data->cheque1 ) ) {
+		$set .= ",cheque1 = ? " ;
+		$params[]= $data->cheque1 ;
+		$start.="s";
+	} else {
+		$set .= ",cheque1 = ? " ;
+		$params[]= NULL;
+		$start.="s";
+	}
 
 
+	if ( isset( $data->cheque2 ) ) {
+		$set .= ",cheque2 = ? " ;
+		$params[]= $data->cheque2 ;
+		$start.="s";
+	} else {
+		$set .= ",cheque2 = ? " ;
+		$params[]= NULL;
+		$start.="s";
+	}
+
+
+	if ( isset( $data->cheque3 ) ) {
+		$set .= ",cheque3 = ? " ;
+		$params[]= $data->cheque3 ;
+		$start.="s";
+	} else {
+		$set .= ",cheque3 = ? " ;
+		$params[]= NULL;
+		$start.="s";
+	}
+	
+
+	
+	$total = 0 ;
+
+	if ( isset($data->cheque1) ) { $total = $total + $data->cheque1 ;}
+	if ( isset($data->cheque2) ) { $total = $total + $data->cheque2 ;}
+	if ( isset($data->cheque3) ) { $total = $total + $data->cheque3 ;}
+	
+
+	if ( isset( $data->num_cheque1 ) ) {
+		$set .= ",num_cheque1 = ? " ;
+		$params[]= utf8_decode($data->num_cheque1) ;
+		$start.="s";
+	} else {
+		$set .= ",num_cheque1 = ? " ;
+		$params[]= NULL;
+		$start.="s";
+	}
+
+
+	if ( isset( $data->num_cheque2 ) ) {
+		$set .= ",num_cheque2 = ? " ;
+		$params[]= utf8_decode($data->num_cheque2 );
+		$start.="s";
+	} else {
+		$set .= ",num_cheque2 = ? " ;
+		$params[]= NULL;
+		$start.="s";
+	}
+
+
+	if ( isset( $data->num_cheque3 ) ) {
+		$set .= ",num_cheque3 = ? " ;
+		$params[]= utf8_decode($data->num_cheque3 );
+		$start.="s";
+	} else {
+		$set .= ",num_cheque3 = ? " ;
+		$params[]= NULL;
+		$start.="s";
+	}
+
+	if ( isset( $data->ch_sport ) ) {
+		$set .= ",ch_sport = ? " ;
+		$params[]= $data->ch_sport ;
+		$start.="s";
+	} else {
+		$set .= ",ch_sport = ? " ;
+		$params[]= NULL;
+		$start.="s";
+	}
+
+
+	if ( isset( $data->num_sport ) ) {
+		$set .= ",num_sport = ? " ;
+		$params[]= utf8_decode($data->num_sport) ;
+		$start.="s";
+	} else {
+		$set .= ",num_sport = ? " ;
+		$params[]= NULL;
+		$start.="s";
+	}
+	
+	if ( isset( $data->coup_sport ) ) {
+		$set .= ",coup_sport = ? " ;
+		$params[]= $data->coup_sport ;
+		$start.="s";
+	} else {
+		$set .= ",coup_sport = ? " ;
+		$params[]= NULL;
+		$start.="s";
+	}
+
+
+	if ( isset( $data->num_coupsport ) ) {
+		$set .= ",num_coupsport = ? " ;
+		$params[]= utf8_decode($data->num_coupsport) ;
+		$start.="s";
+	} else {
+		$set .= ",num_coupsport = ? " ;
+		$params[]= NULL;
+		$start.="s";
+	}
+	
+	if ( isset( $data->nbre_chvac10 ) ) {
+		$set .= ",nbre_chvac10 = ? " ;
+		$params[]= $data->nbre_chvac10 ;
+		$start.="s";
+	} else {
+		$set .= ",nbre_chvac10 = ? " ;
+		$params[]= NULL;
+		$start.="s";
+	}
+
+	if ( isset( $data->nbre_chvac20 ) ) {
+		$set .= ",nbre_chvac20 = ? " ;
+		$params[]= $data->nbre_chvac20 ;
+		$start.="s";
+	} else {
+		$set .= ",nbre_chvac20 = ? " ;
+		$params[]= NULL;
+		$start.="s";
+	}
+
+	if ( isset( $data->especes ) ) {
+		$set .= ",especes = ? " ;
+		$params[]= $data->especes ;
+		$start.="s";
+	} else {
+		$set .= ",especes = ? " ;
+		$params[]= NULL;
+		$start.="s";
+	}
+		
+	if ( isset($data->ch_sport) ) { $total = $total + $data->ch_sport ; }
+	if ( isset($data->coup_sport) ) { $total = $total + $data->coup_sport ; }
+	if ( isset($data->nbre_chvac10) ) { $total = $total + $data->nbre_chvac10 *10 ; }
+	if ( isset($data->nbre_chvac20) ) { $total = $total + $data->nbre_chvac20 *20 ; }
+	if ( isset($data->especes) ) { $total = $total + $data->especes ; }
+
+	
+	$set .= ",total = ? " ;
+	$params[]= $total ;
+	$start.="s";
+	
+	if ( isset( $data->especes ) ) {
+		$set .= ",especes = ? " ;
+		$params[]= $data->especes ;
+		$start.="s";
+	} else {
+		$set .= ",especes = ? " ;
+		$params[]= NULL;
+		$start.="s";
+	}
+
+	if ( isset( $data->cert_medical ) &&  $data->cert_medical ) {
+		$set .= ",cert_medical = ? " ;
+		$params[]= '1' ;
+		$start.="s";
+	} else {
+		$set .= ",cert_medical = ? " ;
+		$params[]= '0';
+		$start.="s";
+	}
+
+	if ( isset( $data->auto_parentale ) &&  $data->auto_parentale  ) {
+		$set .= ",auto_parentale = ? " ;
+		$params[]= '1' ;
+		$start.="s";
+	} else {
+		$set .= ",auto_parentale = ? " ;
+		$params[]= '0';
+		$start.="s";
+	}
+
+	if ( isset( $data->fiche_medicale ) &&  $data->fiche_medicale ) {
+		$set .= ",fiche_medicale = ? " ;
+		$params[]= '1' ;
+		$start.="s";
+	} else {
+		$set .= ",fiche_medicale = ? " ;
+		$params[]= '0';
+		$start.="s";
+	}
+
+	if ( isset( $data->photo ) &&  $data->photo ) {
+		$set .= ",photo = ? " ;
+		$params[]= '1' ;
+		$start.="s";
+	} else {
+		$set .= ",photo = ? " ;
+		$params[]= '0';
+		$start.="s";
+	}
+	if ( isset( $data->reglement ) &&  $data->reglement ) {
+		$set .= ",reglement = ? " ;
+		$params[]= '1' ;
+		$start.="s";
+	} else {
+		$set .= ",reglement = ? " ;
+		$params[]= '0';
+		$start.="s";
+	}
+	
+	if ( isset( $data->paye ) &&  $data->paye ) {
+		$set .= ",paye = ? " ;
+		$params[]= '1' ;
+		$start.="s";
+	} else {
+		$set .= ",paye = ? " ;
+		$params[]= '0';
+		$start.="s";
+	}
+	
+		
+	
+	 $attestation=false;
+	 
+	
+	if ( $data->valide === false && isset($data->cert_medical)  &&  $data->cert_medical && isset($data->paye)  &&  $data->paye )  {
+		
+		$set .= ",valide = ? " ;
+		$params[]= '1' ;
+		$start.="s";
+	
+		$set .= ",date_valide = NOW() " ;
+	
+		$attestation=true;
+	}
+	
+	$params[]= $data->id;
+	$start.="s";
+
+	$query = "UPDATE $tlicencies_encours SET $set WHERE id = ? ";
+
+	$stmt = $mysqli->prepare( $query );
+	$stmt->bind_param( $start  ,...$params );
+
+
+	$result = $stmt->execute();
+	if (!$result) {
+		($dev) ? $err=$stmt->error : $err="invalid query";
+		$stmt->close();
+		setError( $err );
+		return;
+	}
+	
+	
+	if ( $attestation ) {
+		include 'attestation/attestation_pdf.php';
+		$res = send_attestation( $data );
+		if ( $res === false ) {
+			setError("envoi attestation erreur");
+			return;
+		}
+		
+	}
+	
+//	header("X-Message: modification ok",true);
+	header('HeaderName: HeaderValue');
+	return get($id);
+	
+}
+
+
+////////////////////////////////////////////////////////////////////////////////////////////////
 function update($data) {
 	
 	global $dev,$mysqli;
