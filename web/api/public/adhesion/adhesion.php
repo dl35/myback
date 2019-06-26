@@ -182,7 +182,7 @@ function update($id ,$data) {
 
 	$params=array();
 		
-	$set = " date_inscription = NOW() , inscription= '1', nom= ? " ;
+	$set = " date_inscription = NOW() , inscription = '1', type = 'R' , nom= ? " ;
 	$params[]= ( $data->nom );
 	$start="s";
 
@@ -225,6 +225,12 @@ function update($id ,$data) {
 	$set .= ",rang = ? " ;
 	$params[]= ( $rang );
 	$start.="s";
+
+	if ( $categorie === "JE" && $rang === "1" ) {
+		$set .= ",niveau = ? " ;
+		$params[]= 'dep';
+		$start.="s";	
+	} 
 
 	$params[]= $id;
 	$start.="s";
@@ -386,6 +392,11 @@ function add($data) {
 	$params[]= ( $rang );
 	$start.="s";
 	$inc.=",?";
+
+	if ( $categorie === "JE" && $rang === "1" ) {
+		$set .= ",niveau" ;
+		$inc .= ",'dep'";
+	} 
 
 
 	$set .= ",date_inscription" ;
