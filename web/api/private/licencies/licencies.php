@@ -389,7 +389,7 @@ function add($data) {
 	
 }
 ////////////////////////////////////////////////////////////////////////////////////////////////
-function update2($data) {
+function update($data) {
 	
 	global $dev,$mysqli;
 	global $tlicencies_encours;
@@ -397,7 +397,7 @@ function update2($data) {
 
 	$email=$data->email1.','.$data->email2.','.$data->email3 ;
 
-	$telephone=$data->tel1.','.$data->tel2.','.$data->tel3 ;
+	$telephone=$data->telephone1.','.$data->telephone2.','.$data->telephone3 ;
 	
 	$categorie = CategorieFromDate( $data->date , $data->sexe ) ;
 	$rang = RangFromDate( $data->date , $data->sexe );
@@ -425,7 +425,7 @@ function update2($data) {
 	$start.="s";
 
 	$set .= ",code_postal = ? " ;
-	$params[]= ( $data->cp );
+	$params[]= ( $data->code_postal );
 	$start.="s";
 
 	$set .= ",ville = ? " ;
@@ -479,7 +479,7 @@ function update2($data) {
 	}
 
 	if ( isset( $data->commentaires ) ) {
-		$set .= ",licence = ? " ;
+		$set .= ",commentaires = ? " ;
 		$params[]= ( utf8_decode($data->commentaires) );
 		$start.="s";
 	} else {
@@ -488,7 +488,7 @@ function update2($data) {
 		$start.="s";
 	}
 	
-	if ( isset( $data->entr ) ) {
+	if ( isset( $data->entr ) &&  $data->entr  ) {
 		$set .= ",entr = ? " ;
 		$params[]= '1';
 		$start.="s";
@@ -763,7 +763,6 @@ function update2($data) {
 		$start.="s";
 	}
 	
-		
 	
 	 $attestation=false;
 	 
@@ -777,8 +776,12 @@ function update2($data) {
 		$set .= ",date_valide = NOW() " ;
 	
 		$attestation=true;
+
+
+
 	}
 	
+
 	$params[]= $data->id;
 	$start.="s";
 
@@ -795,7 +798,7 @@ function update2($data) {
 		setError( $err );
 		return;
 	}
-	
+
 	
 	if ( $attestation ) {
 		include 'attestation/attestation_pdf.php';
@@ -809,168 +812,10 @@ function update2($data) {
 	
 //	header("X-Message: modification ok",true);
 	header('HeaderName: HeaderValue');
-	return get($id);
+	return get( $data->id);
 	
 }
 
-
-////////////////////////////////////////////////////////////////////////////////////////////////
-function update($data) {
-	
-	global $dev,$mysqli;
-	global $tlicencies_encours;
-	
-	$nom = utf8_decode($data->nom);
-	$prenom = utf8_decode($data->prenom);
-	$adresse = utf8_decode($data->adresse);
-	$ville = utf8_decode($data->ville);
-	
-	
-	$set=" SET ";
-	
-	
-	$set.="nom= '$nom' , ";
-	$set.="prenom= '$prenom' , ";
-	
-	$set.="date= '$data->date' , ";
-	$set.="sexe= '$data->sexe' , ";
-	$set.="adresse= '$adresse' , ";
-	$set.="code_postal= '$data->code_postal' , ";
-	$set.="ville= '$ville' , ";
-	
-	
-	$email = "";
-	if ( strlen($data->email1) > 0  )  $email .= $data->email1 ;
-	$email.="," ;
-	if ( strlen($data->email2) > 0  )  $email .= $data->email2 ;
-	$email.="," ;
-	if ( strlen($data->email3) > 0  )  $email .= $data->email3 ;
-	
-	$tel = "" ;
-	if ( strlen($data->telephone1) > 0  )  $tel .= $data->telephone1 ;
-	$tel.="," ;
-	if ( strlen($data->telephone2) > 0  )  $tel .= $data->telephone2 ;
-	$tel.="," ;
-	if ( strlen($data->telephone3) > 0  )  $tel .= $data->telephone3 ;
-	
-	$set.=" email= '$email' , telephone= '$tel' " ;
-	
-	
-	(isset($data->type) ) ?   $set.=",type= '$data->type' "  :  $set.=",type=NULL" ;
-	(isset($data->categorie) ) ?   $set.=",categorie= '$data->categorie' "  :  $set.=",categorie=NULL" ;
-	(isset($data->rang) ) ?   $set.=",rang= '$data->rang' "  :  $set.=",rang=NULL" ;
-	(isset($data->officiel) ) ?   $set.=",officiel= '$data->officiel' "  :  $set.=",officiel=NULL" ;
-	
-	(isset($data->licence) ) ?   $set.=",licence= '$data->licence' "  :  $set.=",licence=NULL" ;
-	(isset($data->commentaires) ) ?   $set.=",commentaires= '".utf8_decode($data->commentaires)."' "  :  $set.=",commentaires=NULL" ;
-	
-	
-	
-	(isset($data->entr)  &&  $data->entr ) ?   $set.=",entr= '1' "  :  $set.=",entr= '0' " ;
-	
-	
-	( isset($data->cotisation) ) ?  $set.=",cotisation ='$data->cotisation' "  :  $set.=",cotisation = NULL " ;
-
-	
-	( isset($data->carte) ) ?  $set.=",carte ='".utf8_decode($data->carte)."' "  :  $set.=",carte = NULL " ;
-	( isset($data->num_carte) ) ?  $set.=",num_carte ='".utf8_decode($data->num_carte)."' "  :  $set.=",num_carte = NULL " ;
-
-
-	( isset($data->banque) ) ?  $set.=",banque ='$data->banque' "  :  $set.=",banque = NULL " ;
-	
-	( isset($data->cheque1) ) ?  $set.=",cheque1 ='$data->cheque1' "  :  $set.=",cheque1 = NULL " ;
-	( isset($data->cheque2) ) ?  $set.=",cheque2 ='$data->cheque2' "  :  $set.=",cheque2 = NULL " ;
-	( isset($data->cheque3) ) ?  $set.=",cheque3 ='$data->cheque3' "  :  $set.=",cheque3 = NULL " ;
-	
-	$total = 0 ;
-
-	if ( isset($data->cheque1) ) { $total = $total + $data->cheque1 ;}
-	if ( isset($data->cheque2) ) { $total = $total + $data->cheque2 ;}
-	if ( isset($data->cheque3) ) { $total = $total + $data->cheque3 ;}
-	
-
-	( isset($data->num_cheque1) ) ?  $set.=",num_cheque1 ='$data->num_cheque1' "  :  $set.=",num_cheque1 = NULL " ;
-	( isset($data->num_cheque2) ) ?  $set.=",num_cheque2 ='$data->num_cheque2' "  :  $set.=",num_cheque2 = NULL " ;
-	( isset($data->num_cheque3) ) ?  $set.=",num_cheque3 ='$data->num_cheque3' "  :  $set.=",num_cheque3 = NULL " ;
-	
-	
-	
-	( isset($data->ch_sport) ) ?  $set.=",ch_sport ='$data->ch_sport' "  :  $set.=",ch_sport = NULL " ;
-	( isset($data->num_sport) ) ?  $set.=",num_sport ='$data->num_sport' "  :  $set.=",num_sport = NULL " ;
-	
-	
-	( isset($data->coup_sport) ) ?  $set.=",coup_sport ='$data->coup_sport' "  :  $set.=",coup_sport = NULL " ;
-	( isset($data->num_coupsport) ) ?  $set.=",num_coupsport ='$data->num_coupsport' "  :  $set.=",num_coupsport = NULL " ;
-	
-	
-	( isset($data->nbre_chvac10) ) ?  $set.=",nbre_chvac10 ='$data->nbre_chvac10' "  :  $set.=",nbre_chvac10 = NULL " ;
-	( isset($data->nbre_chvac20) ) ?  $set.=",nbre_chvac20 ='$data->nbre_chvac20' "  :  $set.=",nbre_chvac20 = NULL " ;
-	( isset($data->especes) ) ?  $set.=",especes ='$data->especes' "  :  $set.=",especes = NULL " ;
-	
-	if ( isset($data->ch_sport) ) { $total = $total + $data->ch_sport ; }
-	if ( isset($data->coup_sport) ) { $total = $total + $data->coup_sport ; }
-	if ( isset($data->nbre_chvac10) ) { $total = $total + $data->nbre_chvac10 *10 ; }
-	if ( isset($data->nbre_chvac20) ) { $total = $total + $data->nbre_chvac20 *20 ; }
-	if ( isset($data->especes) ) { $total = $total + $data->especes ; }
-
-	$set.=",total= '$total' ";
-	
-	
-	(isset($data->cert_medical)  &&  $data->cert_medical ) ?   $set.=",cert_medical= '1' "  :  $set.=",cert_medical= '0' " ;
-	(isset($data->auto_parentale)  &&  $data->auto_parentale ) ?   $set.=",auto_parentale= '1' "  :  $set.=",auto_parentale= '0' " ;
-	(isset($data->fiche_medicale)  &&  $data->fiche_medicale ) ?   $set.=",fiche_medicale= '1' "  :  $set.=",fiche_medicale= '0' " ;
-	
-	
-	(isset($data->photo)  &&  $data->photo ) ?   $set.=",photo= '1' "  :  $set.=",photo= '0' " ;
-	
-	
-	(isset($data->reglement)  &&  $data->reglement ) ?   $set.=",reglement= '1' "  :  $set.=",reglement= '0' " ;
-	(isset($data->paye)  &&  $data->paye ) ?   $set.=",paye= '1' "  :  $set.=",paye= '0' " ;
-	
-	
-	 $attestation=false;
-	 
-	
-	if ( $data->valide === false && isset($data->cert_medical)  &&  $data->cert_medical && isset($data->paye)  &&  $data->paye )  {
-		
-		$set.=",valide= '1' ";
-		$set.=",date_valide= NOW() ";
-		$attestation=true;
-	}
-	
-	
-	
-	$id = $data->id ;
-	
-	$set.=" WHERE id = '$id' " ;
-	
-	$query = "UPDATE  $tlicencies_encours  $set  ";
-	
-		
-	$result = $mysqli->query( $query ) ;
-	if (!$result ) {
-		($dev) ? $err=$mysqli->connect_error: $err="invalid query";
-		setError( $err );
-		return ;
-		
-	}
-	
-	
-	if ( $attestation ) {
-		include 'attestation/attestation_pdf.php';
-		$res = send_attestation( $data );
-		if ( $res === false ) {
-			setError("envoi attestation erreur");
-			return;
-		}
-		
-	}
-	
-//	header("X-Message: modification ok",true);
-	header('HeaderName: HeaderValue');
-	return get($id);
-	
-}
 
 
 
@@ -1005,7 +850,7 @@ function send_attestation ( $data) {
 	$date = $data->date;
 	
 	if( $dev ) { 
-		$to=$dev_email.",geraldine.gilbert75@sfr.fr,geraldine.gilbert75@gmail.com";
+		$to=$dev_email;
 	}
 	
     // viens de attestation/attestation_pdf		 
@@ -1056,18 +901,6 @@ function send_attestation ( $data) {
 	
 	$success = mail($to,$subject,$msg,$headers);
 	
-	
-/*	$to      = 'denis.lesech@gmail.com';
-	$subject = 'le sujet';
-	$message = 'Bonjour !';
-	$headers = 'From: webmaster@example.com' . "\r\n" .
-			'Reply-To: webmaster@example.com' . "\r\n" .
-			'X-Mailer: PHP/' . phpversion(). "\r\n" ;
-	$headers .= 'Content-Type: multipart/mixed;boundary='.$boundary."\r\n";
-	$headers .= "\r\n";
-	
-	
-	$success = mail($to, $subject, $msg , $headers);*/
 	
 
 	return $success ;

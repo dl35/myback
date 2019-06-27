@@ -102,7 +102,8 @@ function makepdf( $data  )
 ////////////////////////////////////////////////////////////////////////////////////////
 
 function sendmailpdf( $data  )	{
- global $dev , $dev_email ;   
+ global $dev , $dev_email ;  
+ global $saison_enc; 
 
 $pdf = makepdf($data);    
 $rappel = getRappel();
@@ -135,10 +136,10 @@ $msg .= '--'.$boundary."\r\n";
 
 $msg .= "Content-Type: text/html; charset=\"utf-8\"\r\n\r\n";
 
-
+/*
 $msg .= "<div>Bonjour ,<br><br>";
 $msg .="Merci d'avoir validé votre pré-inscription au club Espérance Chartres de Bretagne Natation pour la $saison_enc. </br>"; 
-$msg .="<p>Vous devez maintenant <strong>imprimer le fichier inscription.pdf</strong> en pièce jointe,<strong>le signer et le déposer accompagné de votre règlement</strong>, dans la boite aux lettres du club, dans le hall de la piscine de la Conterie.</p>";
+// $msg .="<p>Vous devez maintenant <strong>imprimer le fichier inscription.pdf</strong> en pièce jointe,<strong>le signer et le déposer accompagné de votre règlement</strong>, dans la boite aux lettres du club, dans le hall de la piscine de la Conterie.</p>";
 $msg .="<p>Pour mémoire, le fichier <strong> inscription.pdf </strong> contient les documents suivants :</p>";
 $msg .="<ul>";
 $msg .="<li>le dossier d'inscription : à signer</li>";
@@ -146,11 +147,15 @@ $msg .="<li>l'autorisation parentale : à compléter  pour les adhérents mineur
 $msg .="<li>la fiche de liaison médicale : à compléter</li>";
 $msg .="<li>le réglement intèrieur : à lire et à signer</li>";
 $msg .="</ul>";
+*/
 
 $msg .= $rappel ;
 
+/*
 $msg .="Pour toute question sur l'inscription au club, veuillez envoyer un email à l'adresse inscription@ecnatation.org </br>";
 $msg .="Sportivement<br>--<br>Le bureau de l'association<br>Web : http://ecnatation.fr </div>\r\n";
+*/
+
 $content = chunk_split(base64_encode($pdf->Output("inscription.pdf","S") ));
 $msg .= '--'.$boundary."\r\n";
 

@@ -20,9 +20,14 @@ $texte1= utf8_decode("Je soussigné, Géraldine Gilbert, Présidente de l'associ
 $texte2=utf8_decode("Chartres de Bretagne Natation (N° Jeunesse et Sports : 0135 S80)");
 $texte3=utf8_decode("certifie que :");
 
-$texte4=utf8_decode("est adhérent de l'association Espérance Chartres de Bretagne Natation,");
+$texte4=utf8_decode("est adhérent de l'association Espérance Chartres de Bretagne Natation");
 $texte5=utf8_decode("et s'est acquitté(e) de la cotisation au club pour un montant de $cotisation Euros");
 $texte6=utf8_decode("pour la $saison.");
+
+if ( $cotisation == 0  ) {
+	$texte5=utf8_decode("pour la $saison.");
+	$texte6="";
+}
 
 ////////////////////////////////////////////////////////////////
 
