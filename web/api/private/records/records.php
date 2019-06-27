@@ -1,6 +1,6 @@
 <?php
 
-$auth= array("admin","ecn");
+$auth= array("admin","ecn","ent");
 
 if ( !isset($profile) && in_array( $profile , $auth ) ) {
 	
@@ -85,7 +85,7 @@ function getNames() {
 	
 	$query  = "SELECT nom , prenom , sexe FROM ".$trecords." GROUP BY nom,prenom,sexe ";
 	$query .= " UNION " ;
-	$query .= " SELECT nom ,  prenom , sexe FROM  ".$tlicencies." GROUP BY  nom, prenom, sexe  ORDER BY sexe , nom , prenom  ";
+	$query .= " SELECT nom ,  prenom , sexe FROM  ".$tlicencies." where valide ='1' GROUP BY  nom, prenom, sexe  ORDER BY sexe , nom , prenom  ";
 	
 	$result = $mysqli->query( $query )  ;
 	if (!$result) {

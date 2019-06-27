@@ -159,7 +159,7 @@ function validateParams($json) {
 }
 ////////////////////////////////////////////////////////////////////////////////////
 function addTest() {
-	global $dev,$mysqli;
+	global $dev, $dev_email, $mysqli;
 	global $tlicencies_encours;
     
     $nom = "test";
@@ -170,7 +170,7 @@ function addTest() {
     $sexe= "H";
     $date="2000-03-15";
     $tel="0600000032,0600000033,0600000034";
-    $email="inscriptions@gmail.com";
+    $email= $dev_email;
 
 	$idlic = "TEST1234";
 	

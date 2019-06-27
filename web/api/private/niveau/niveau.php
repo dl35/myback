@@ -1,14 +1,13 @@
 <?php
 
-/*
-$auth= array("adm","ecn");
+$auth= array("admin","ent");
 
-if ( !isset($profile) || !in_array( $profile , $auth ) ) {
+if ( !isset($profile) && in_array( $profile , $auth ) ) {
 	
 	setError("Not Authorized" , 401 ) ;
 	return;
 	
-}*/
+}
 
 switch ($method) {
 	case 'PUT':
@@ -63,9 +62,9 @@ function get() {
 	
 	
 	$query = "SELECT id ,nom , prenom , categorie , rang , niveau  FROM $tlicencies
-		WHERE categorie is NOT NULL   ORDER BY nom, prenom ";
+		WHERE categorie is NOT NULL AND valide = '1'  ORDER BY nom, prenom ";
 	
-	
+
 	$result = $mysqli->query( $query ) ;
 	if (!$result) {
 		http_response_code(404);

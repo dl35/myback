@@ -2,7 +2,7 @@
 include  '../common/fonctions_categories.php' ;
 
 
-$auth= array("admin","ecn");
+$auth= array("admin","user");
 
 if ( !isset($profile) || !in_array( $profile , $auth ) ) {
 	

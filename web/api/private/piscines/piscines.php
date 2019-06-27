@@ -1,6 +1,6 @@
 <?php
 
-$auth= array("admin","ecn");
+$auth= array("admin","user","ent");
 
 if ( !isset($profile) && in_array( $profile , $auth ) ) {
 	

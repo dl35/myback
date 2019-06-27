@@ -3,7 +3,7 @@ include 'config.mailto.php';
 include '../common/texte_nouveau_inscriptions.php';
 
 
-$auth= array("admin","ecn");
+$auth= array("admin","user","ent");
 
 if ( !isset($profile) && in_array( $profile , $auth ) ) {
 	
