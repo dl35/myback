@@ -777,8 +777,6 @@ function update($data) {
 	
 		$attestation=true;
 
-
-
 	}
 	
 
@@ -802,7 +800,7 @@ function update($data) {
 	
 	if ( $attestation ) {
 		include 'attestation/attestation_pdf.php';
-		$res = send_attestation( $data );
+		$res = send_attestation( $data ,$email );
 		if ( $res === false ) {
 			setError("envoi attestation erreur");
 			return;
@@ -811,7 +809,7 @@ function update($data) {
 	}
 	
 //	header("X-Message: modification ok",true);
-	header('HeaderName: HeaderValue');
+//	header('HeaderName: HeaderValue');
 	return get( $data->id);
 	
 }
@@ -838,7 +836,7 @@ function delete($id) {
 
 /////////////////////////////////////////////////////////////////////////////////
 
-function send_attestation ( $data) {
+function send_attestation ( $data , $email) {
 	
 	
 	global $dev,$dev_email,$saison_enc;
@@ -851,6 +849,17 @@ function send_attestation ( $data) {
 	
 	if( $dev ) { 
 		$to=$dev_email;
+	} else {
+		$temails = explode(",", $email);
+		$v = "" ;
+		foreach($temails as $t  ) {
+			 if  ( empty($t) ) continue ;	
+			 if  ( empty($v) ) { $v=$t; 
+			 } else { $v.=",".$t; }
+
+		 }
+
+		$to=$v;
 	}
 	
     // viens de attestation/attestation_pdf		 
