@@ -2,6 +2,18 @@
 include '../common/fonctions_categories.php' ;
 include '../common/texte_inscriptions.php' ;
 
+
+$auth= array("admin");
+
+if ( !isset($profile) || !in_array( $profile , $auth ) ) {
+	
+	setError("Not Authorized" , 401 ) ;
+	return;
+	
+}
+
+
+
 switch ($method) {
 	
 
@@ -168,7 +180,12 @@ function addTest() {
     $ville = "Noyal Chatillon sur seiche";
     $cp = "35230";
     $sexe= "H";
-    $date="2000-03-15";
+    
+    $time = strtotime("-12 year", time());
+    $mydate = date("Y-m-d", $time);
+
+    
+    $date=$mydate;
     $tel="0600000032,0600000033,0600000034";
     $email= $dev_email;
 
@@ -187,7 +204,7 @@ function addTest() {
 
 	$result = $mysqli->query( $query ) ;
 	if (!$result ) {
-		($dev) ? $err=$mysqli->error: $err="invalid query";
+		$err=$mysqli->error ;
 		setError( $err );
 		return;
     }
@@ -206,7 +223,7 @@ function delTest() {
 	
 	$result = $mysqli->query( $query ) ;
 	if (!$result ) {
-		($dev) ? $err=$mysqli->connect_error: $err="invalid query";
+		$err=$mysqli->error ;
 		setError( $err );
 		return;
     }
@@ -242,7 +259,7 @@ function sendInscriptions() {
 
     $result = $mysqli->query($query) ;
 	if (!$result) {
-		($dev) ? $err=$mysqli->error : $err="invalid request";
+		$err=$mysqli->error ;
 		setError( $err );
 		return ;
 	}
