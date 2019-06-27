@@ -146,14 +146,9 @@ function sendMail($to,$from,$subject,$body) {
 	$headers .= "X-Mailer: PHP\n";
 	$headers .= "X-auth-smtp-user: webmaster@ecnatation.org \n";
 	$headers .= "X-abuse-contact: webmaster@ecnatation.org \n";
-	//$headers .= "X-auth-smtp-user: $from \n";
-	//$headers .= "X-abuse-contact: $from \n";
 	$headers .= "Reply-to: ECN natation  <$from>\n";
 	$headers .= "From: ECN natation <$from>\n";
-	if( ! $dev ) {
-		$headers .= "Bcc:ecninscription@gmail.com\n";
-	}
-//	$headers .= "Content-Type: text/html; charset=\"iso-8859-1\"";
+    $headers .= "Bcc:ecninscription@gmail.com\n";
 	$headers .= "Content-Type: text/html; charset=\"utf-8\"";
 	$headers .='Content-Transfer-Encoding: 8bit';
 
