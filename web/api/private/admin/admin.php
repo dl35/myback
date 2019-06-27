@@ -60,66 +60,83 @@ function getParams() {
     }
 
     $r = $result->fetch_assoc() ;
-   // ( $r['dev'] == '0' ) ? $r['dev'] = false : $r['dev'] = true ;
+   
     $r['dev_email'] = utf8_encode( $r['dev_email'] ) ;
+    $r['dateforum'] = utf8_encode( $r['dateforum'] ) ;
     $r['saison_enc'] = utf8_encode( $r['saison_enc'] ) ;
     $r['saison_last'] = utf8_encode( $r['saison_last'] ) ;
 
-    $r['dateforum'] = utf8_encode( $r['dateforum'] ) ;
-
+   
     $r['tlicencies_encours'] = utf8_encode( $r['tlicencies_encours'] ) ;
     $r['tlicencies_last'] = utf8_encode( $r['tlicencies_last'] ) ;
     $r['tlicencies'] = utf8_encode( $r['tlicencies'] ) ;
     
-    $r['tlicencies_encours']  = str_replace("tlicencies_" , "" , $r['tlicencies_encours']  );
-    $r['tlicencies_last']  = str_replace("tlicencies_" , "" , $r['tlicencies_last']  );
-    
+   
 
     unset($r['id']);
 
     $mysqli->close();
     header("Content-type:application/json");
-    $datas['datas']=$r;
     echo json_encode( $r );
 
 }
 ////////////////////////////////////////////////////////////////////////////////////
 function addParams($obj) {
 	global $mysqli;
+    
+
+    $pamas =array();
+    
+	$set = "dev=?" ;
+	$params[] = $obj->dev ;
+	$start = "s";
+		
+	$set .= ",dev_email=?" ;
+	$params[]= utf8_decode( $obj->dev_email ) ;
+	$start .= "s";
+
+	$set .= ",saison_enc=?" ;
+	$params[]= utf8_decode( $obj->saison_enc ) ;
+    $start .= "s";
+    
+    $set .= ",saison_last=?" ;
+	$params[]= utf8_decode( $obj->saison_last ) ;
+	$start .= "s";
+
+    $set .= ",dateforum=?" ;
+	$params[]= utf8_decode( $obj->dateforum ) ;
+    $start .= "s";
+    
+    $set .= ",tlicencies_encours=?" ;
+	$params[]= utf8_decode( $obj->tlicencies_encours ) ;
+	$start .= "s";
+   
+    $set .= ",tlicencies_last=?" ;
+	$params[]= utf8_decode( $obj->tlicencies_last ) ;
+    $start .= "s";
+    
+    $set .= ",tlicencies=?" ;
+	$params[]= utf8_decode( $obj->tlicencies ) ;
+    $start .= "s";
+
+  
+    $id='1';    
+    $query = "UPDATE params SET $set  WHERE id = ?  ";
+	$params[]=$id;
+	$start.="s";
+	$stmt = $mysqli->prepare( $query );
+	$stmt->bind_param( $start  ,...$params );
 	
-    $set = "dev ='$obj->dev' ";
-
-    $de  = utf8_decode( $obj->dev_email ) ;
-    $set.= ",dev_email ='$de' ";
-
-    $se  = utf8_decode( $obj->saison_enc ) ;
-    $set.= ",saison_enc ='$se' ";
-
-    $sl  = utf8_decode( $obj->saison_last ) ;
-    $set.= ",saison_last = '$sl' ";
-
-    $df  = utf8_decode( $obj->dateforum ) ;
-    $set.= ",dateforum ='$df' ";
-
-    $le  = "tlicencies_".utf8_decode( $obj->tlicencies_encours ) ;
-    $set.= ",tlicencies_encours ='$le' ";
-
-    $ll  = "tlicencies_".utf8_decode( $obj->tlicencies_last ) ;
-    $set.= ",tlicencies_last ='$ll' ";
-
-    $lic = utf8_decode( $obj->tlicencies ) ;
-    $set.= ",tlicencies ='$lic' ";
-
-    $query = "UPDATE params SET $set  where id ='1' ";
-
-
-	$result = $mysqli->query( $query ) ;
-	if (!$result ) {
-		($dev) ? $err=$mysqli->error: $err="invalid query";
+	
+	$result = $stmt->execute();
+	if (!$result) {
+		($dev) ? $err=$stmt->error : $err="invalid connect";
 		setError( $err );
 		return;
-    }
-    setSuccess("add params ");
+	}
+		
+    $stmt->close();
+    setSuccess("params modif: ok");
     return;
     
     

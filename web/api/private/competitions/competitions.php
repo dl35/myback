@@ -149,6 +149,7 @@ function parseCategories($cat)
 function add($data) {
 	
 	global $dev,$mysqli;
+	global $tcompetitions;
 
 	
 	
@@ -278,7 +279,7 @@ function add($data) {
 	$inc ="(".$inc.")";
 	
 	
-	$query=" INSERT INTO  competitions  $set  VALUES  $inc ";
+	$query=" INSERT INTO  $tcompetitions  $set  VALUES  $inc ";
 	
 	$stmt = $mysqli->prepare( $query );
 	$stmt->bind_param( $start  , ...$params );
@@ -309,7 +310,7 @@ function add($data) {
 function update($id ,$data) {
 	
 	global $dev,$mysqli;
-	
+	global $tcompetitions;
 	
 	$datetime = new DateTime($data->debut);
 	$data->debut=$datetime->format("Y-m-d");
@@ -431,7 +432,7 @@ function update($id ,$data) {
 
 	
 	
-	$query = "UPDATE competitions SET $set  WHERE id = ?  ";
+	$query = "UPDATE $tcompetitions SET $set  WHERE id = ?  ";
 	$params[]=$id;
 	$start.="s";
 	$stmt = $mysqli->prepare( $query );
@@ -487,9 +488,10 @@ function get( $id ) {
 	
 		
 		global $dev,$mysqli;
+		global $tcompetitions ;
 	
 	
-		$query = "SELECT *  FROM competitions  WHERE id ='$id'  ORDER BY debut, fin ";
+		$query = "SELECT *  FROM $tcompetitions  WHERE id ='$id'  ORDER BY debut, fin ";
 	
 		$result = $mysqli->query($query) ;
 		if (!$result) {
