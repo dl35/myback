@@ -251,7 +251,9 @@ function update($id ,$data) {
 	
 	
 	$stmt->close();
-
+	
+	$data->categorie = $categorie;
+	$data->rang = $rang;
 
 	include 'makePdf.php' ;
 	$ret =  sendmailpdf( $data );
@@ -424,6 +426,8 @@ function add($data) {
 	
 	$stmt->close();
 	
+	$data->categorie = $categorie;
+	$data->rang = $rang;
 
 	include 'makePdf.php' ;
 	$ret =  sendmailpdf( $data );
