@@ -254,6 +254,7 @@ function update($id ,$data) {
 	
 	$data->categorie = $categorie;
 	$data->rang = $rang;
+	$data->type = 'R';
 
 	include 'makePdf.php' ;
 	$ret =  sendmailpdf( $data );
@@ -428,6 +429,7 @@ function add($data) {
 	
 	$data->categorie = $categorie;
 	$data->rang = $rang;
+	$data->type='N';
 
 	include 'makePdf.php' ;
 	$ret =  sendmailpdf( $data );

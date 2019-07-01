@@ -399,8 +399,6 @@ function update($data) {
 
 	$telephone=$data->telephone1.','.$data->telephone2.','.$data->telephone3 ;
 	
-	$categorie = CategorieFromDate( $data->date , $data->sexe ) ;
-	$rang = RangFromDate( $data->date , $data->sexe );
 
 	$params=array();
 		
@@ -439,13 +437,22 @@ function update($data) {
 	$set .= ",telephone = ? " ;
 	$params[]= ( $telephone );
 	$start.="s";
-
+  
 	$set .= ",categorie = ? " ;
-	$params[]= ( $categorie );
+	if ( isset( $data->categorie ) ) {
+		$params[]= ( $data->categorie );
+	} else {
+		$params[] = NULL ;
+	}
 	$start.="s";
 
+
 	$set .= ",rang = ? " ;
-	$params[]= ( $rang );
+	if ( isset( $data->rang ) ) {
+		$params[]= ( $data->rang );
+	} else {
+		$params[] = NULL ;
+	}
 	$start.="s";
 
 	if ( isset( $data->type ) ) {

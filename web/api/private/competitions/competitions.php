@@ -288,7 +288,7 @@ function add($data) {
 	
 	$result = $stmt->execute();
 	if (!$result) {
-		($dev) ? $err=$stmt->error : $err="invalid connect";
+		($dev) ? $err=$stmt->error : $err="invalid execute";
 		setError(404 , $err );
 		return;
 	}
@@ -298,7 +298,7 @@ function add($data) {
 	
 	$id = $mysqli->insert_id ;
 	
-	setSuccess('ajout valide');
+	return get($id);
 
 	
 }
@@ -449,7 +449,9 @@ function update($id ,$data) {
 	
 	$stmt->close();
 	
-	setSuccess('modif valide');
+	// setSuccess('modif valide');
+
+	return get($id);
 	
 	
 }
