@@ -52,7 +52,7 @@ function makepdf( $data  )
     $pdf->SetXY(61, 120.5+7);$pdf->Write(0, $data->email2 );  
     $pdf->SetXY(61, 127.5+7);$pdf->Write(0, $data->email3 );
 
-    $pdf->SetXY(110, 148.5+7);$pdf->Write(0, $data->type);
+    $pdf->SetXY(110, 148.5);$pdf->Write(0, $data->type);
 	
 	
        $pdf->addPage(); 
