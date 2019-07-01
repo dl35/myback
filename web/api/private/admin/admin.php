@@ -359,6 +359,7 @@ function prepare() {
     $query[]="UPDATE $table_new  SET officiel = NULL  WHERE officiel = '' ";
     $query[]="UPDATE $table_new  SET type = 'R'  WHERE type = 'N' ";
     $query[]="UPDATE $table_new  SET inscription='1' ,date_inscription = NOW()  WHERE categorie IS NULL ";
+    $query[]="UPDATE $table_new  SET inscription='1' ,date_inscription = NOW()  WHERE entr ='1' ";
 
     
     foreach ($query as $q ) {
