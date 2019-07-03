@@ -11,12 +11,12 @@ function doPdf($nom,$prenom,$date,$cotisation,$saison) {
 list($y,$m,$d)=explode("-",$date);
 $date=$d."/".$m."/".$y;
 
-$nom = utf8_decode( "Nom: ".strtoupper($nom) );
-$prenom = utf8_decode( "Prénom: ".$prenom ) ;
-$date = utf8_decode( "Date de Naissance: ".$date );
+$nom =  "Nom: ".strtoupper($nom) ;
+$prenom =  utf8_decode("Prénom: ").$prenom  ;
+$date = "Date de Naissance: ".$date ;
 
 
-$texte1= utf8_decode("Je soussigné, Géraldine Gilbert, Présidente de l'association Espérance" );
+$texte1=utf8_decode("Je soussignée, Géraldine Gilbert, Présidente de l'association Espérance" );
 $texte2=utf8_decode("Chartres de Bretagne Natation (N° Jeunesse et Sports : 0135 S80)");
 $texte3=utf8_decode("certifie que :");
 
@@ -60,7 +60,7 @@ if ( $cotisation == 0  ) {
 	$pdf->SetXY( $x ,130);$pdf->Write(0, $date);
 
 	$pdf->SetXY( $x ,165);$pdf->Write(0, $texte4 );
-	$pdf->SetXY( $x ,170);$pdf->Write(0,  $texte5 );
+	$pdf->SetXY( $x ,170);$pdf->Write(0, $texte5 );
 	$pdf->SetXY( $x ,175);$pdf->Write(0, $texte6 );
 	
 	
