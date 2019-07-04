@@ -1,6 +1,6 @@
 <?php
 
-$auth= array("admin","ecn");
+$auth= array("admin","user","ent");
 
 if ( !isset($profile) && in_array( $profile , $auth ) ) {
 	
@@ -443,8 +443,9 @@ function getEngagements($id) {
 			" WHERE  $tengagements.id_competitions = $id  ".
 			" AND  $tlicencies.id=$tengagements.id_licencies ".
 			" AND $tengage_date.id_engage = $tengagements.id ".
-	        " ORDER BY $tlicencies.nom, $tlicencies.prenom,$tengage_date.date asc ";
+	        " ORDER BY $tlicencies.id,$tlicencies.nom, $tlicencies.prenom,$tengage_date.date asc ";
 
+	
 
 	$result = $mysqli->query( $query ) ;
 	if (!$result) {

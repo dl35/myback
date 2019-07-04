@@ -1,13 +1,5 @@
 <?php
-
-//echo  $products ;
-
-
-
-//include './config.competitions.php';
-
-/*
-$auth= array("admin","ecn");
+$auth= array("admin","user","ent");
 
 if ( !isset($profile) && in_array( $profile , $auth ) ) {
 	
@@ -15,7 +7,7 @@ if ( !isset($profile) && in_array( $profile , $auth ) ) {
 	return;
 	
 }
-*/
+
 
 
 switch ($method) {
@@ -90,14 +82,22 @@ function validationParams( $data, $get  ) {
 	}
 	
 	
-	
+	$deb = new DateTime($data->debut);
+	$fin = new DateTime($data->fin);
+	$d = $fin->diff($deb)->days; 
+
+	if( $d < 0  ||  $d >=7 ) {
+		$error ="date : 6 jours maxi!" ;
+		setError($error);
+		return false ;
+	}
 	
 	return true ;
 }
 
 function validateObject($json) {
 	
-	
+		
 	if( !isset( $json->nom )     ) return false ;
 	if( !isset( $json->lieu )    ) return false ;
 	if( !isset( $json->categories )    ) return false ;
@@ -562,6 +562,9 @@ function getEnt() {
 	
 	
 	$rows = array();
+
+	$t = array("value" => "-" , "nom" => "-" );
+	$rows[] = $t ;		
 	while($r = $result->fetch_assoc() ) {
 		
 		$t = array();

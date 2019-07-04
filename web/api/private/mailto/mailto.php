@@ -148,12 +148,15 @@ function sendMail($to,$from,$subject,$body) {
 	$headers .= "X-abuse-contact: webmaster@ecnatation.org \n";
 	$headers .= "Reply-to: ECN natation  <$from>\n";
 	$headers .= "From: ECN natation <$from>\n";
-    $headers .= "Bcc:ecninscription@gmail.com\n";
+	if( !$dev ) {
+		$headers .= "Bcc:ecninscription@gmail.com\n";
+		}
 	$headers .= "Content-Type: text/html; charset=\"utf-8\"";
 	$headers .='Content-Transfer-Encoding: 8bit';
 
 
 	if( $dev ) { 
+		$body .="[$to]";
 		$to=$dev_email;
 	}
 	
@@ -312,9 +315,10 @@ function getLicenciesGroup ( $list ) {
 	while($r = $result->fetch_assoc() ) {
 		$e = explode(",", $r['email']);
 		$email = "" ;
+		
 		foreach($e as $k ) {
-			if( empty($k) ) continue ;
-			$email = ( empty($email) ) ?  $k : ",".$k ;
+			if( empty( trim($k) ) ) continue ;
+			$email .= ( empty($email) ) ?  $k : ",".$k ;
 			}
 			if( !empty($email) ) {
 				$rows[]  = $email ;
@@ -358,8 +362,8 @@ function getAllLicencies( $list ) {
 		$e = explode(",", $r['email']);
 		$email = "" ;
 		foreach($e as $k ) {
-			if( empty($k) ) continue ;
-			$email = ( empty($email) ) ?  $k : ",".$k ;
+			if( empty( trim($k) )  ) continue ;
+			$email .= ( empty($email) ) ?  $k : ",".$k ;
 			}
 			if( !empty($email) ) {
 				$rows[]  = $email ;
