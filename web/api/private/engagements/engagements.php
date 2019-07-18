@@ -799,10 +799,11 @@ function envoyer_mail($compet, $lic  , $ide , $idlic )
 {
 
 	global $dev , $dev_email;
-	global $urlpublic;
-	
+	global $urlscript;
 
-	$url=$urlpublic."?engagements/$ide/$idlic";
+	$url=$urlscript."/engage.php?eng=".$ide."&id=".$idlic ;
+
+
 	
 	$lieu=$compet['lieu'];
 	$label=$compet['nom'];
@@ -894,10 +895,10 @@ function envoyer_mail($compet, $lic  , $ide , $idlic )
 	{
 	
 		global $dev;
-		global $urlpublic;
+		global $urlscript;
 		
 	
-		$url=$urlpublic."?engagements/$ide/$idlic";
+		$url=$urlscript."/engage.php?eng=".$ide."&id=".$idlic ;
 		
 		$lieu=$compet['lieu'];
 		$label=$compet['nom'];

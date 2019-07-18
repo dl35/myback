@@ -198,7 +198,7 @@ font-family: sans-serif;
     margin-right: auto ;
     left:0;
     right:0;
-  background-image:url(banner_mini_gray.png);
+  background-image:url(img/banner_mini_gray.png);
  
 }
 
