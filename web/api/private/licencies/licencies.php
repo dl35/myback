@@ -14,6 +14,11 @@ if ( !isset($profile) || !in_array( $profile , $auth ) ) {
 switch ($method) {
 	case 'PUT':
 		$data = json_decode(file_get_contents('php://input'));
+		if( isInvalidate($data ) ) {
+			invalide ( $data );	
+		break ;	
+		}
+
 		$v= validateObject( $data ) ;
 		if( !$v ) { 
 			setError("invalid parameters");
@@ -85,7 +90,11 @@ function validationParams( $data, $get  ) {
 	return true ;
 }
 
-
+/////////////////////////////////////////////////////////////////////////////////////
+function isInvalidate($json) {
+	return  (  array_key_exists('invalidate', $json) ) ;
+	
+}
 /////////////////////////////////////////////////////////////////////////////////////
 function validateObject($json) {
 	
@@ -821,7 +830,140 @@ function update($data) {
 	
 }
 
+/////////////////////////////////////////////////////////////////////////////////////
+function invalide($data) {
+	global $dev,$mysqli;
+	global $tlicencies_encours;
 
+		$id = $data->invalidate ;
+
+		$set = "";
+		$params = array();
+		$start = "" ;
+
+    	$set .= "banque = ? " ;
+		$params[]= NULL;
+		$start.="s";
+
+		$set .= ",cheque1 = ? " ;
+		$params[]= NULL;
+		$start.="s";
+		$set .= ",cheque2 = ? " ;
+		$params[]= NULL;
+		$start.="s";
+		$set .= ",cheque3 = ? " ;
+		$params[]= NULL ;
+		$start.="s";
+		
+	   	$set .= ",num_cheque1 = ? " ;
+		$params[]= NULL;
+		$start.="s";
+		$set .= ",num_cheque2 = ? " ;
+		$params[]= NULL;
+		$start.="s";
+		$set .= ",num_cheque3 = ? " ;
+		$params[]= NULL;
+		$start.="s";
+		$set .= ",ch_sport = ? " ;
+		$params[]= NULL;
+		$start.="s";
+	
+		$set .= ",num_sport = ? " ;
+		$params[]= NULL;
+		$start.="s";
+		$set .= ",coup_sport = ? " ;
+		$params[]= NULL;
+		$start.="s";
+		$set .= ",num_coupsport = ? " ;
+		$params[]= NULL;
+		$start.="s";
+		
+		$set .= ",nbre_chvac10 = ? " ;
+		$params[]= NULL;
+		$start.="s";
+		$set .= ",nbre_chvac20 = ? " ;
+		$params[]= NULL;
+		$start.="s";
+		$set .= ",especes = ? " ;
+		$params[]= NULL;
+		$start.="s";
+	
+		$total = 0 ;
+		$set .= ",total = ? " ;
+		$params[]= $total ;
+		$start.="s";
+	
+		$set .= ",especes = ? " ;
+		$params[]= NULL;
+		$start.="s";
+	
+		$set .= ",cert_medical = ? " ;
+		$params[]= '0';
+		$start.="s";
+		$set .= ",auto_parentale = ? " ;
+		$params[]= '0';
+		$start.="s";
+		$set .= ",fiche_medicale = ? " ;
+		$params[]= '0';
+		$start.="s";
+		$set .= ",photo = ? " ;
+		$params[]= '0';
+		$start.="s";
+		$set .= ",reglement = ? " ;
+		$params[]= '0';
+		$start.="s";
+		$set .= ",paye = ? " ;
+		$params[]= '0';
+		$start.="s";
+		$set .= ",valide = ? " ;
+		$params[]= '0';
+		$start.="s";
+		$set .= ",inscription = ? " ;
+		$params[]= '-1';
+		$start.="s";
+
+		$set .= ",date_valide = ? " ;
+		$params[]= NULL ;
+		$start.="s";
+
+		$d = new DateTime();
+		$df =$d->format('Y-m-d H:i:s');
+	
+
+
+		$set .= ",date_inscription = ? " ;
+		$params[]= "$df" ;
+		$start.="s";
+
+
+
+		$set .= ",commentaires = ? " ;
+		$params[]= 'annulation logicielle le '.$df ;
+		$start.="s";
+
+		
+		$params[]= $id;
+		$start.="s";
+	
+		$query = "UPDATE $tlicencies_encours SET $set WHERE id = ? ";
+	
+		$stmt = $mysqli->prepare( $query );
+		$stmt->bind_param( $start  ,...$params );
+	
+	
+		$result = $stmt->execute();
+		if (!$result) {
+			($dev) ? $err=$stmt->error : $err="invalid query";
+			$stmt->close();
+			setError( $err );
+			return;
+		}
+
+
+
+//	header("X-Message: modification ok",true);
+	setSuccess("inscription invalide ok");
+}
 
 
 /////////////////////////////////////////////////////////////////////////////////////

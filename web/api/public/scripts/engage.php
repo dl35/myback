@@ -217,7 +217,7 @@ if ( $choixnages == '1' ) {
       <div class="row">
         <div class="input-field col s6 offset-s3 black-text">
           <textarea id="nages" name="nages" class="materialize-textarea black-text" ><? echo $nages ?></textarea>
-          <label class="black-text" for="nages" >Vous pouvez choisir vos nages...</label>
+          <label class="black-text" for="nages" >Vous pouvez saisir les nages souhaitées...</label>
         </div>
       </div>
 <?
@@ -229,7 +229,7 @@ if ( $choixnages == '1' ) {
   </div>
 
   <div class="center-align" >
-  <button class="btn green darken-3 waves-effect waves-light" onClick="javascript:save();" >Valider
+  <button class="btn green darken-3 waves-effect waves-light" onClick="javascript:save();" >Confirmer
   <i class="material-icons right">send</i>
   </button>
   </div>
@@ -462,7 +462,14 @@ function getEngagement ($id,$code ) {
 		$message="La date limite pour les réponses est dépassée: ".$limite.".";
 		unset($res['engage']);
 	}
-	
+  
+  $lien = $rows['lien']; 
+  if(  !empty($lien) ) {
+    $message .="<br><a target=\"_blank\" href=\"".$lien."\" style=\"color:#FFFFFF;text-decoration: underline\" >Voir les informations de la compétition</a>." ;
+  }
+
+
+
 	if( $rows['choixnages'] === '1' ) {
 		$res['choixnages']= true ;
 	} else {
@@ -470,7 +477,7 @@ function getEngagement ($id,$code ) {
 	}
 
 	
-  $res['lien']= $rows['lien'];
+ 
   
   if( $rows['type'] === "stage" )  {
     $res['stage']= true;

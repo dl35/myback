@@ -396,7 +396,7 @@ function add($data) {
 	$start.="s";
 	$inc.=",?";
 
-	if ( $categorie === "JE" && $rang === "1" ) {
+	if ( $categorie === "JE" || $categorie === "JU" ) {
 		$set .= ",niveau" ;
 		$inc .= ",'dep'";
 	} 
