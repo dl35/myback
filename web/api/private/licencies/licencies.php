@@ -915,6 +915,9 @@ function invalide($data) {
 		$set .= ",paye = ? " ;
 		$params[]= '0';
 		$start.="s";
+		$set .= ",cotisation = ? " ;
+		$params[]= '0';
+		$start.="s";
 		$set .= ",valide = ? " ;
 		$params[]= '0';
 		$start.="s";
