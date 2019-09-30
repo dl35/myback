@@ -33,6 +33,8 @@ $d["text"]="@bureau";
 $from[]=$d;
 
 
+
+
 $group=array();
 
 $d=array();
@@ -66,13 +68,24 @@ $d["text"]="@masters";
 $group[]=$d;
 
 $d=array();
+$d["value"]="ent";
+$d["text"]="@entraineurs";
+$group[]=$d;
+
+$d=array();
 $d["value"]="of";
 $d["text"]="@officiels";
 $group[]=$d;
 
+$d=array();
+$d["value"]="pre";
+$d["text"]="@pre-inscrits(pas validés)";
+$group[]=$d;
 
-
-
+$d=array();
+$d["value"]="at";
+$d["text"]="@attente(pas inscrits)";
+$group[]=$d;
 
 
 

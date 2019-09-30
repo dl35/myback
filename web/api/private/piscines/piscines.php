@@ -42,7 +42,7 @@ switch ($method) {
 
 		case 'PUT':
 		$data = json_decode(file_get_contents('php://input'));
-		if( !isset( $data ) ) {
+		if( !isset( $data ) && !isset( $id )  ) {
 			setError( "invalides routes" ,404);
 			break;
 		} 
@@ -52,11 +52,18 @@ switch ($method) {
 			setError($error);
 			return false ;
 		}
-		put($data) ;
+	
+		update($data , $id) ;
 		break;
 
+		case 'DELETE'	:
+		if( !isset( $id ) ) {
+			setError( "invalides routes" ,404);
+			break;
+		} 
+		delete( $id );
+		break;
 
-		
 	default:
 		setError( "invalides routes" ,404);
 		break;
@@ -69,14 +76,23 @@ switch ($method) {
 function getPiscine( $id ) {
 	global $dev, $mysqli;
 	
-	$q1 = "SELECT * FROM piscines WHERE id = '$id' ";
-	$q2 = "SELECT * FROM bassins  WHERE id_piscines = '$id' ";
+	$q1 = "SELECT id,libelle,adresse,cp,ville,latitude,longitude FROM piscines WHERE id = '$id' ";
+	$q2 = "SELECT longueur,couloirs FROM bassins  WHERE id_piscines = '$id' ";
 	
 	$r1 = $mysqli->query( $q1 ) ;
 	if (!$r1) {
 		($dev) ? $err=$mysqli->error ." ".$query  : $err="invalid query";
 		setError( $err );
 		return ;
+	}
+		$res= array();
+	while($row = $r1->fetch_assoc()  ) {
+		$d =array();
+		foreach($row as $key => $value){ // each key in each row
+			$d[$key] =utf8_encode($value);
+		  }
+
+		$res = $d;
 	}
 
 	$r2 = $mysqli->query( $q2 ) ;
@@ -86,15 +102,38 @@ function getPiscine( $id ) {
 		return ;
 	}
 	
-	$res = array();
-	$res['piscine'] = $r1;
-	$res['bassin'] = $r2;
+	while($row = $r2->fetch_assoc()  ) {
+		$d =array();
+		foreach($row as $key => $value){ // each key in each row
+			$d[$key] =utf8_encode($value);
+		  }
 
-	return json_encode( $res ) ;
+		$res['bassins'][] = $d;
+	}
 
+		$r1->close();
+		$r2->close();
+		$mysqli->close();
+
+		echo json_encode( $res ) ;
 
 }
 
+/////////////////////////////////////////////////////////////
+function delete( $id ) {
+	global $dev, $mysqli;
+	$query = "DELETE FROM piscines,bassins USING piscines , bassins WHERE piscines.id = '$id' and  piscines.id = bassins.id_piscines " ;
+
+	$result = $mysqli->query( $query ) ;
+	if (!$result) {
+		($dev) ? $err=$mysqli->error ." ".$query  : $err="invalid query";
+		setError( $err );
+		return ;
+	}
+	
+	setSuccess("supp ok");
+
+}
 
 
 /////////////////////////////////////////////////////////////
@@ -145,11 +184,11 @@ function getDatas( $bbox ) {
 						'source' => 'ecn' ,
 						'waze' => $geo['latitude']. "," . $geo['longitude'] ,
 						'precision' => $geo['region'] ));
-			$ch = "" ;					
+			$ch = [] ;					
 			foreach ($rbassins as $b )	{
 					$len = $b['longueur'] ;
 					$coul = $b['couloirs'] ;
-					$ch .= "<br>".$len . " m ".$coul ." coul";
+					$ch [] = $len . " m ".$coul ." coul";
 			}				 
 			$f['properties']['bassins'] = $ch ;
 			$formation[] = $f ;
@@ -241,7 +280,85 @@ function add($data) {
 	}
 
 }
+////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////
+function update($data, $id ) {
+	global $dev, $mysqli;
+	global $tpiscines;
+
+
+	$set = "libelle=?" ;
+	$params[] = ucfirst( strtolower( $data->libelle   )  );
+	$start = "s";
+	
+
+	$set .= ",adresse=?" ;
+	$params[] = ucfirst( strtolower( $data->adresse   )  );
+	$start .= "s";
+
+
+	$set .= ",cp=?" ;
+	$params[] = ucfirst( strtolower( $data->cp  )  );
+	$start .= "s";
+
+
+	$set .= ",ville=?" ;
+	$params[] = ucfirst( strtolower( $data->ville   )  );
+	$start .= "s";
+
+
+	$set .= ",latitude=?" ;
+	$params[] = ucfirst( strtolower( $data->latitude   )  );
+	$start .= "s";
+	
+
+	$set .= ",longitude=?" ;
+	$params[] = ucfirst( strtolower( $data->longitude   )  );
+	$start .= "s";
+	
+	$query = "UPDATE $tpiscines SET $set  WHERE id = ?  ";
+
+
+	$params[]= $id;
+
+	$start.="s";
+	$stmt = $mysqli->prepare( $query );
+	if ( !$stmt ) {
+		( $dev ) ? $err=$mysqli->error : $err="invalid execute";
+		setError($err , 404);
+		return;	
+	}
+	$stmt->bind_param( $start  ,...$params );
+
+
+	$result = $stmt->execute();
+	if (!$result) {
+		($dev) ? $err=$stmt->error : $err="invalid execute";
+		setError($err , 404);
+		return;
+	}
+
+	$query = "DELETE FROM bassins  WHERE bassins.id_piscines = '$id' " ;
+	$result = $mysqli->query( $query ) ;
+	if (!$result) {
+		($dev) ? $err=$mysqli->error ." ".$query  : $err="invalid query";
+		setError( $err );
+		return ;
+	}
+
+	$res = insertBassins($id, $data->bassins  ,$mysqli  ) ;
+	if ( $res ) {
+		$message=array();
+		$message['success']=true;
+		$message['message']= "update ok";
+		echo json_encode( $message );
+
+	} else {
+		setError( $res  );
+	}
+
+}
+/////////////////////////////////////////////////////////////////////////////
 function insertBassins($id,$bassins,$mysqli){
 	
  $stmt = $mysqli->prepare("INSERT INTO bassins (id_piscines , longueur, couloirs ) VALUES (? , ? , ?) ");
@@ -264,11 +381,7 @@ if (isset($err) ) {
 
 
 }
-/////////////////////////////////////////////////////////////////////////
-function update( $data ) {
 
-
-}
 
 
 ?>

@@ -25,7 +25,7 @@ function getDatas( $bbox ) {
 	
 	list($left,$bottom,$right,$top)=explode(",",$bbox);
 	
-	$query = "SELECT * FROM piscine WHERE longitude>=".$left." AND longitude<=".$right." AND latitude>=".$bottom." AND latitude<=".$top ;
+	$query = "SELECT * FROM piscines WHERE longitude>=".$left." AND longitude<=".$right." AND latitude>=".$bottom." AND latitude<=".$top ;
 	
 	$result = $mysqli->query( $query ) ;
 	if (!$result) {
@@ -34,15 +34,23 @@ function getDatas( $bbox ) {
 		return ;
 	}
 	
-//	https://waze.com/ul?q=66%20Acacia%20Avenue&ll=45.6906304,-120.810983&navigate=yes
+	
 	
 	
 	while($geo = $result->fetch_assoc()  ) {
 		
+		$id = $geo['id'] ;
+		$query = "SELECT longueur,couloirs FROM bassins WHERE id_piscines = '$id' " ;
+		$rbassins = $mysqli->query( $query ) ;
+		if (!$rbassins) {
+			//setError( $mysqli->error );
+			break;
+		}
+
 		
 		( $geo['bassin'] == '25') ? $c="#ff7800" :  $c="#ff0000";
 		
-		$formation[] = array(
+		$f = array(
 				'type' 		=> 'Feature',
 				'geometry'	=> array(
 						'type' => 'Point',
@@ -50,26 +58,33 @@ function getDatas( $bbox ) {
 								$geo['longitude'],
 								$geo['latitude'])),
 				'properties' => array(
+					    'id' =>  $geo['id']  ,
 						'name' => utf8_encode( $geo['libelle'] ) ,
 						'ville' => $geo['cp']." ".utf8_encode( $geo['ville'] ) ,
-						'couloir' =>$geo['couloirs'] ,
-						'bassin' =>$geo['bassin'] ,
+						//'bassins' =>$rbassins ,
 						'description' => utf8_encode( $geo['adresse'] ) ,
 						'color' => "$c" ,
 						'source' => 'ecn' ,
-						'waze' => 'ul?ll=' .$geo['latitude'] . ',' . $geo['longitude'] .'&navigate=yes',
+						'waze' => $geo['latitude']. "," . $geo['longitude'] ,
 						'precision' => $geo['region'] ));
-								
-								
-								
+			$ch = "" ;					
+			foreach ($rbassins as $b )	{
+					$len = $b['longueur'] ;
+					$coul = $b['couloirs'] ;
+					if ( !empty($ch) ) $ch.=";" ;
+					$ch .= $len . " m ".$coul ." coul";
+			}				 
+			$f['properties']['bassins'] = $ch ;
+			$formation[] = $f ;
+
 	}
 	if( !isset($formation ) ) {
 		$formation= [];
 	}
+
+
 	echo  json_encode($formation);
 	
 }
-
-
 
 ?>

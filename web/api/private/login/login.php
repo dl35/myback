@@ -115,7 +115,7 @@ function put( $data ) {
 	
 	
 	
-	$set = " SET ";
+
 	
 	$set = "user=?" ;
 	$params[] = utf8_decode($data->user);
@@ -229,7 +229,7 @@ function delete($id) {
 ///////////////////////////////////////////////////////////////////////
 function sendMail($id) {
 	global $tlogin ;
-	global $dev,$mysqli;
+	global $dev,$dev_email,$mysqli;
 
 	$query = "SELECT user,passwd,profile FROM $tlogin WHERE id = '$id' LIMIT 1 ";
 	
@@ -276,8 +276,8 @@ function sendMail($id) {
 	$headers .= "Content-Type: text/html; charset=iso-8859-1";
 
 
-	if( $dev ) $email="denis.lesech@gmail.com";
-	$email="denis.lesech@gmail.com";
+	if( $dev ) $email= $dev_email;
+	
 
 	$success = mail($email,$subject,$body,$headers);
 	if( $success) {

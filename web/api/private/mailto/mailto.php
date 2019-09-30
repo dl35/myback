@@ -56,12 +56,12 @@ function mailto($data) {
 			$email = $data->email ;
 
 		} else 	if( $data->mode === 'l' || $data->mode === 'g' ) {
-			$dev =true ;
+			
 			// mode licencies .....
 			$list=$data->dests ;
 
 		} else if( $data->mode === 'c'   ) {
-			$dev =true ;
+			
 			// mode competitions .....
 		$cond  ="  id_competitions='$data->compet' ";
 		$cond .=" AND engage_date.id_engage = engagements.id ";
@@ -195,8 +195,8 @@ function getDatas() {
 
 
 		
-		$r['nom']=ucfirst( strtolower($r['nom'] ) ) ;
-		$r['prenom'] = $r['prenom'] ;
+		$r['nom']=ucfirst( strtolower( utf8_encode( $r['nom'] )) ) ;
+		$r['prenom'] = utf8_encode( $r['prenom'] ) ;
 		$r['categorie']=ucfirst( strtolower($r['categorie']) ) ;
 		
 		
@@ -261,20 +261,41 @@ function getCompetionsEncours() {
 /////////////////////////////////////////////////////////////////////////////////////////////
 
 function getLicenciesGroup ( $list ) {
-	global $tlicencies;
+	global $tlicencies , $tlicencies_encours ;
 	global $dev,$mysqli;
 	$membres = false;
+	$attente = false;
+	$preinscrit = false;
 	$officiel = false;
+	$entraineur = false;
 	$in = "";
 	foreach( $list as $key ) {
 		if ($key === "me") {
 			$membres = true;
 			break;
 		}
+		if ($key === "at") {
+			// attente non validés
+			$attente = true;
+			break;
+		}
+		if ($key === "pre") {
+			// attente non validés
+			$preinscrit = true;
+			break;
+		}
+
+
 		if ($key === "of") {
 			$officiel = true;
 			continue;
 		}
+
+		if ($key === "ent") {
+			$entraineur = true;
+			continue;
+		}
+
 
 		$key =strtoupper( $key );
 
@@ -288,14 +309,24 @@ function getLicenciesGroup ( $list ) {
 
 	if ( $membres ) {
 		$query = "SELECT DISTINCT  email  FROM $tlicencies  WHERE valide='1'  ORDER BY id ";
-
-	} else {
+	} else if ( $preinscrit ) {
+		$query = "SELECT DISTINCT  email  FROM $tlicencies_encours  WHERE  inscription ='1' AND valide='0'  ORDER BY id ";
+	} else if ( $attente ) {
+		$query = "SELECT DISTINCT  email  FROM $tlicencies_encours  WHERE  inscription ='0' AND valide='0'  ORDER BY id ";
+	}
+	
+	else {
 		$wh = "" ;
 		if( $officiel ) {
 			$wh = " officiel IS NOT NULL " ;
 		} 
+		if( $entraineur ) {
+			if( !empty($wh) ) $wh.= " OR " ;
+			$wh = " entr = '1' " ;
+		}
+
         if( ! empty($in) ) {
-			if( $officiel) $wh.= " AND " ;
+			if( !$empty($wh) ) $wh.= " OR " ;
 			$wh .= " categorie IN ( $in ) ";
 		}  
 

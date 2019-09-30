@@ -151,6 +151,12 @@ function get() {
 		$r['prenom']=utf8_encode($r['prenom'] );
 		$r['lieu']=utf8_encode($r['lieu'] );
 		
+		$pts = 	$r['points'] ;
+		if ( $pts === NULL ) {
+			$r['points'] = 0 ;
+		}
+
+
 		if( $r['bassin'] == '25' ) {
 			
 			if ( $r['sexe'] == 'F' ) {
