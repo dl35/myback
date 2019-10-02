@@ -269,6 +269,8 @@ function getLicenciesGroup ( $list ) {
 	$officiel = false;
 	$entraineur = false;
 	$in = "";
+
+
 	foreach( $list as $key ) {
 		if ($key === "me") {
 			$membres = true;
@@ -326,7 +328,7 @@ function getLicenciesGroup ( $list ) {
 		}
 
         if( ! empty($in) ) {
-			if( !$empty($wh) ) $wh.= " OR " ;
+			if( !empty($wh) ) $wh.= " OR " ;
 			$wh .= " categorie IN ( $in ) ";
 		}  
 

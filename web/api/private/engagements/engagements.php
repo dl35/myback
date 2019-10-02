@@ -894,7 +894,7 @@ function envoyer_mail($compet, $lic  , $ide , $idlic )
 	function envoyer_mail_stage($compet, $lic  , $ide , $idlic )
 	{
 	
-		global $dev;
+		global $dev ,$dev_email;
 		global $urlscript;
 		
 	
@@ -951,8 +951,8 @@ function envoyer_mail($compet, $lic  , $ide , $idlic )
 		$headers .= "Bcc:ecninscription@gmail.com\n";
 		$headers .= "Content-Type: text/html; charset=iso-8859-1";
 
-		if( $dev ) $to = "denis.lesech@gmail.com" ;
-		$to = "denis.lesech@gmail.com";
+		if( $dev ) $to = $dev_email ;
+		
 	
 		$success = mail($to,$subject,$message,$headers);
 
