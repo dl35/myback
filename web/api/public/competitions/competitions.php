@@ -121,7 +121,7 @@ function getEngagements($id) {
 	global $tlicencies,$tengagements,$tcompetitions,$tengage_date;
 	global $dev,$mysqli;
 	
-	$query = "SELECT id,nom,lieu,debut,fin,type  FROM $tcompetitions  WHERE id ='$id' ";
+	$query = "SELECT id,nom,lieu,debut,fin,type,lien  FROM $tcompetitions  WHERE id ='$id' ";
 	
 		
 	$result = $mysqli->query( $query ) ;
@@ -138,6 +138,7 @@ function getEngagements($id) {
 		$dcompet['lieu'] = utf8_encode( $r['lieu'] ) ;
 		$dcompet['debut'] =  $r['debut']  ;
 		$dcompet['fin'] =  $r['fin']  ;
+		$dcompet['lien'] =  $r['lien']  ;
 
 		
 
@@ -145,7 +146,7 @@ function getEngagements($id) {
 
 
 		
-	$query="SELECT engage_date.date,engage_date.id as edid ,$tengagements.id_licencies,$tengagements.id_competitions,$tlicencies.nom,$tlicencies.prenom,$tlicencies.categorie,$tlicencies.sexe,$tlicencies.rang,$tengage_date.presence ".
+	$query="SELECT engage_date.date,engage_date.id as edid ,$tengagements.date_reponse,$tengagements.id_licencies,$tengagements.id_competitions,$tlicencies.nom,$tlicencies.prenom,$tlicencies.categorie,$tlicencies.sexe,$tlicencies.rang,$tengage_date.presence ".
 			" FROM $tlicencies,$tengagements,$tengage_date ".
 			" WHERE  $tengagements.id_competitions = $id  ".
 			" AND  $tlicencies.id=$tengagements.id_licencies ".
