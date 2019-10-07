@@ -19,7 +19,7 @@ switch ($method) {
 		break;
 		
 }
-
+/////////////////////////////////////////////////////////////
 function getDatas( $bbox ) {
 	global $dev, $mysqli;
 	
@@ -67,12 +67,11 @@ function getDatas( $bbox ) {
 						'source' => 'ecn' ,
 						'waze' => $geo['latitude']. "," . $geo['longitude'] ,
 						'precision' => $geo['region'] ));
-			$ch = "" ;					
+			$ch = [] ;					
 			foreach ($rbassins as $b )	{
 					$len = $b['longueur'] ;
 					$coul = $b['couloirs'] ;
-					if ( !empty($ch) ) $ch.=";" ;
-					$ch .= $len . " m ".$coul ." coul";
+					$ch [] = $len . " m ".$coul ." coul";
 			}				 
 			$f['properties']['bassins'] = $ch ;
 			$formation[] = $f ;
