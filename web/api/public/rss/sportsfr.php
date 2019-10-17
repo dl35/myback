@@ -1,26 +1,49 @@
 <?php
-$dir = "sport" ;
+$dir = "sportsfr" ;
 if( is_dir($dir) === false )
 {
-    mkdir($dir);
+  $r =   mkdir($dir);
+  if( $r == false ) {
+    echo "error make directory " ;
+    exit(1) ;
+  }
 }
-deleteall();
+
+
 $api = "https://www.ecnatation.org/api/public/rss/" ;
 $flux = "http://www.sports.fr//fr/cmc/natation/rss.xml";
+
+
+
 
 $feed = file_get_contents( $flux );
 if ( empty($feed) ) {
     echo "error";
-    return ;
+    exit(1) ;
 }
 
 
 
 $rss = simplexml_load_string($feed);
+if ($rss === false) {
+  echo "Erreur lors du chargement du XML\n";
+  foreach(libxml_get_errors() as $error) {
+      echo "\t", $error->message;
+  }
+  exit(1) ;
+}
 
-
+$r= deleteall();
+if( $r == false ) {
+  echo "error delete all " ;
+  exit(1) ;
+}
 
 $channel = $rss->xpath('//channel');
+if ($channel === false) {
+  echo "Erreur channel\n";
+  exit(1) ;
+}
 
 $info =array();
 
@@ -32,8 +55,14 @@ $info['link'] = (string) $channel[0]->link ;
 
 
 
-
 $items = $rss->xpath('//item');
+
+if ($items === false) {
+  echo "Erreur item in channel\n";
+  exit(1) ;
+}
+
+
 $i = 0 ;
 $datas = array();
 foreach($items as $item ) {
@@ -62,6 +91,7 @@ foreach($items as $item ) {
       }
  
      }
+
     $datas[] =$d ;
    
     $i++ ;
@@ -69,28 +99,34 @@ foreach($items as $item ) {
 }
 
 
+
 $res['channel'] =$info ;
 $res['items'] =$datas ;
 
-$fp = fopen($dir.'/sport.json', 'w');
+$fp = fopen($dir.'/'.$dir.'.json', 'w');
 
 fwrite($fp, json_encode($res));
 fclose($fp);
 
 
+
+
 function deleteall() {
   global $dir ;
   $files = scandir($dir);
-
+  $r = true ;
   foreach( $files as $f ) {
     $pparts = pathinfo( $f );
     if( is_dir($f) ) continue ;
     if( $pparts === "json" ) continue ;
     $f = $dir.'/'.$f;
-    unlink($f) ;
+    $r = unlink($f) ;
+    if( $r === false ) {
+      break ;
+    }
 
   }
-
+return $r ;
 }
 
 function get_millis(){

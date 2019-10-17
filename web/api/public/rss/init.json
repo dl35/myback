@@ -1,0 +1,9 @@
+{
+"actif" : false ,
+"scenario" : [
+    { "name" :"ffn" , "url" :"/api/public/rss/ffn/ffn.json" , "logo" :"assets/logos/ffn.png" } ,
+    { "name" :"rmc" , "url" :"/api/public/rss/rmc/rmc.json" , "logo" :"assets/logos/rmc.png"  } ,
+    { "name" :"equipe" , "url" :"/api/public/rss/equipe/equipe.json" , "logo" :"assets/logos/equipe.png" } ,
+    { "name" :"sportsfr" , "url" :"/api/public/rss/sportsfr/sportsfr.json"  , "logo" :"assets/logos/sportsfr.png" } 
+    ] 
+}
