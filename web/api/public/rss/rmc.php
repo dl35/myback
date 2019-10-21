@@ -1,5 +1,9 @@
 <?php
-$dir = "rmc" ;
+
+$actu = "rmc" ;
+$dir = __DIR__ ."/".$actu  ;
+
+
 if( is_dir($dir) === false )
 {
   $r =   mkdir($dir);
@@ -82,7 +86,7 @@ foreach($items as $item ) {
       }
     $content = file_get_contents( $img );
     $rand = get_millis() ;
-    $name= $dir .'/'.$dir.$rand.'.'.$ext;
+    $name= $dir .'/'.$actu.$rand.'.'.$ext;
    
     $r = file_put_contents( $name , $content);
     if( $r !== false ) {

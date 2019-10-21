@@ -11,12 +11,14 @@ if ( !isset($profile) && in_array( $profile , $auth ) ) {
 
 switch ($method) {
 	case 'PUT':
+	
 		$data = json_decode(file_get_contents('php://input'));
 		if ( !isset($id)  ||  !isset( $data ) ) {
 			$err="invalid request post id/data ";
 			setError($err );
 			break;
 		}
+	
 		// data /idcompet ->data->notify ; /idengage data->extranat ; /idcompet data->notifyall
 		update( $id ,$data );
 		break;
@@ -596,8 +598,7 @@ function update( $id  , $data )
 	global $dev , $mysqli;
 	global $tengagements ;
 	
-	
-	
+		
 	if( isset($data->notifyall)  )
 	{
 		$idcompetitions=$id;
@@ -625,6 +626,11 @@ function update( $id  , $data )
 		
 		setSuccess( "Extranat" );
 		return;
+	}	else if( isset($data->modif)  )
+	{
+	
+	  return updateEngagement($id , $data);
+	
 	}
 	
 	else {
@@ -636,6 +642,75 @@ function update( $id  , $data )
 	
 	
 }
+
+function updateEngagement ($id , $data) {
+	global $dev,$mysqli;
+	global $tengagements,$tengage_date;
+	
+	 if( !isset($data->idl) ) { 
+		setError("error id licencies"); 
+		return;}
+	 if( !isset($data->eng ) ) {
+		setError("error liste engagements");
+		return;	}
+
+	
+	 $idl=$data->idl ;
+
+
+	foreach ($data->eng as $v ) {
+
+		$query = "UPDATE $tengage_date SET presence = ?  WHERE id = ?  ";
+		
+		$params=array();
+		$params[]=$v->presence;
+		$start="s";
+		$params[]=$v->edid;
+		$start.="s";
+	
+		$stmt = $mysqli->prepare( $query );
+		$stmt->bind_param( $start  ,...$params );
+		
+		
+		$result = $stmt->execute();
+		if (!$result) {
+			($dev) ? $err=$stmt->error : $err="invalid connect";
+			$stmt->close();
+			setError( $err );
+			return;
+		}
+		
+		$stmt->close();
+		
+	}
+	
+	$params=array();
+	$query = "UPDATE $tengagements SET date_reponse = NOW() ,date_forcage = NOW()  WHERE id = ? AND id_licencies = ? ";
+	$params[]=$id;
+	$start ="s";
+	$params[]=$idl;
+	$start.="s";
+	$stmt = $mysqli->prepare( $query );
+	$stmt->bind_param( $start  ,...$params );
+	
+	
+	$result = $stmt->execute();
+	if (!$result) {
+		($dev) ? $err=$stmt->error : $err="invalid connect";
+		$stmt->close();
+		setError( $err );
+		return;
+	}
+	
+	$stmt->close();
+	$mysqli->close();
+	
+	$message ="update ok";
+	setSuccess( $message );
+	
+	
+}
+
 
 
 
