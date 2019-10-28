@@ -541,7 +541,7 @@ function getCompetitions() {
 	
 	
 	
-	$query = "SELECT id,nom,lieu,debut,fin  FROM $tcompetitions WHERE verif='1' AND debut >= NOW()  ORDER BY debut, fin ";
+	$query = "SELECT id,nom,lieu,debut,fin  FROM $tcompetitions WHERE verif='1' AND fin >= NOW()  ORDER BY debut, fin ";
 	
 		
 	$result = $mysqli->query( $query ) ;
@@ -950,7 +950,7 @@ function envoyer_mail($compet, $lic  , $ide , $idlic )
 			$headers .= "Content-Type: text/html; charset=iso-8859-1";
 			
 			
-		    $dev = true ;		
+		    	
 			
 			if( $dev ) $to = $dev_email ;
 			

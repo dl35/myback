@@ -92,26 +92,33 @@ foreach($items as $item ) {
 
     $content = file_get_contents( $img );
     $rand = get_millis() ;
-    $name= $dir .'/'.$actu.$rand.'.'.$ext;
+    $fname= $actu.$rand.'.'.$ext;
+     $name= $dir .'/'.$fname;
     $r = file_put_contents( $name , $content);
     if( $r !== false ) {
       //  resize_img( $name , 200  ) ;
-        $d['img'] = $api . $name ;
+        $d['img'] = $api .$actu."/".$fname ;
+       
       }
  
      }
 
     
     $datas[] =$d ;
-   
+  
+
     $i++ ;
     if ( $i>=10 ) break ;
 }
 
+
+
+
+
 $res['channel'] =$info ;
 $res['items'] =$datas ;
 
-$fp = fopen($dir.'/'.$dir.'.json', 'w');
+$fp = fopen($dir.'/'.$actu.'.json', 'w');
 
 
 fwrite($fp, json_encode($res));

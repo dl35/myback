@@ -1,5 +1,5 @@
 {
-"actif" : false ,
+"actif" : true ,
 "scenario" : [
     { "name" :"ffn" , "url" :"/api/public/rss/ffn/ffn.json" , "logo" :"assets/logos/ffn.png" } ,
     { "name" :"rmc" , "url" :"/api/public/rss/rmc/rmc.json" , "logo" :"assets/logos/rmc.png"  } ,

@@ -10,3 +10,5 @@ web/api/private/jwt.php
 web/api/private/authentification.php
 
 web/api/public/routes.php
+
+web/api/private/records/traitement
