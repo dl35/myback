@@ -1,48 +1,8 @@
 <?php
-//////////////////////////////////////////////////
-$code_ecn="50503501000";
-/////////////////////////////////////////////////
-
-$root=$_SERVER["DOCUMENT_ROOT"];
-$directory= $root."/upload/" ;
-$file=$directory.$filename.".xml";
-
-$file =  "ffnex_performances_59385.xml";
-
-//////////////////////////////////////////////////////////////////////
-
-$exist=file_exists ( $file ) ;
-
-if( !$exist  ) {
-$info=utf8_encode("le fichier est indisponible !");
-echo $info;
-return;		
-}
-$xml = simplexml_load_file( $file );
-$isecn=readClub( $xml ) ;
-if( $isecn === false ) {
-$info=utf8_encode("la compétition de contient pas de nageurs de ECN Chartres de Bretagne");
-echo $info;
-return;	
-}
-
-$master=isMaster($xml);
-$codenages= getCodesNages() ;
-$compet=getCompetition( $xml );
-$year_compet=$compet["year"];
-$swimmers= getSwimmers( $xml ,$isecn,$year_compet ) ;
 
 
 
 
-$resultats=array();
-/////////////////////////////////////////////////////////////
-getResultats($xml , $isecn  , $codenages ,$swimmers,$master );
-
-
-
-
-//////////////////////////////////////////////////////////////////////////////////////
 /////////////////////////////////////////////////////////////////////////////////////
 function yeartoage($year , $year_compet) {
 	
@@ -83,11 +43,10 @@ $relais=array("87","37","84")	;
 }
 /////////////////////////////////////////////////////////////////////////
 ///////////////////////////////////////////////////////////////////////// 
-function readClub( $xml ) {
-global 	$code_ecn;
-//050353986
+function readClub( $xml , $code_ecn ) {
 // recherche le code ecn dans le document 
 $xpath="//CLUB[@code='$code_ecn']";
+
 $result = $xml->xpath( $xpath );
 if ( $result ) return  (string) $result[0]['id'] ;
 else  return false ;
@@ -183,44 +142,7 @@ $dist=array( "100" => "25","1"=> "50","2"=> "100","3"=> "200","4"=> "400","5"=> 
 		return $nages ;
 		
 	}
-////////////////////////////////////////////////////////////////////
-function readLicence( $file ) {
-//FRA505035398692014FSIMON Florent M25061992FRA O 0510201110102011RN 482083 	
-//code	       ;     ;NOM  Prenom  sexeDateNaissanceFRA .... Licence  ;     
-global 	$code_ecn;
 
-$nageurs=array();
-$lines = file( $file);
-foreach ($lines as $line_num => $line) {
-	$pos = strpos( $line , $code_ecn    );
-	
-	if( $pos !== false ) {
-		
-		
-					$key = substr($line,0,19);
-					
-					$year=substr($line,69,4);
-					$age=yeartoage( $year );
-				
-				
-					
-					$nom= substr($line,19,25);
-					$pnom= substr($line,44,20);
-
-					
-					//$line = substr($line,19,45);
-					
-					$d=array();
-					$d['nom']=trim($nom);
-					$d['prenom']=trim($pnom);
-					$d['age']=$age;
-					
-					$nageurs[$key]=$d;
-	                 }
-										}
-
-					return $nageurs;
-}
 //////////////////////////////////////////////////////////////////////////
 function isvide( $v ) {
 return (trim($v) !== "" );
@@ -299,9 +221,9 @@ return $r;
 		    
 }
 /////////////////////////////////////////////////////////////////////
-function traiteNage( $res , $swimmers , $codenages  ) {
+function traiteNage( $res , $swimmers , $codenages , &$resultats ) {
 	
-global $resultats;		
+	
 $dnage=array("50","100","200","400","800");
 
 
@@ -327,7 +249,6 @@ $dnage=array("50","100","200","400","800");
 			  $nageurs['ref']=$nage['nage']."(".$nage['distance'].")";
 		      $resultats[]=$nageurs;
 			
-
 		  
 		    if( $nage['nage'] == "4N") {
 
@@ -421,10 +342,7 @@ function getAgeGroups($res) {
 
 }
 ////////////////////////////////////////////////////////////////////////
-function traiteRelaisMasters($res , $swimmers , $agegroup  ) {
-
-global $resultats;	
-
+function traiteRelaisMasters($res , $swimmers , $agegroup , &$resultats  ) {
 
 
 $coderelais=getCodesRelais();
@@ -528,9 +446,9 @@ $relay_rec=array("47","97","87","37","39","89","84");
 			  	return true;
 }
 /////////////////////////////////////////////////////////////////////////////
-function traiteRelais($res , $swimmers , $agegroup  ) {
+function traiteRelais($res , $swimmers , $agegroup , &$resultats  ) {
 
-global $resultats;	
+
 
 $coderelais=getCodesRelais();
 
@@ -660,201 +578,41 @@ foreach( $e as $relay ) {
 ///////////////////////////////////////////////////////////////////////////
 
 
-function getResultats( $xml , $clubid ,$codenages , $swimmers,$masters ) {
+function getResultats( $xml, $clubid, $codenages, $swimmers, $masters ) {
 
-
+$resultats = array();	
 
 $agegroup=getAgeGroups( $xml );
 
 $xpath="//RESULTS/RESULT[@clubid='$clubid'][@disqualificationid='']";
 $result = $xml->xpath( $xpath );	
 
-  
-		foreach( $result  as $res ) {
+  		foreach( $result  as $res ) {
 		
-				if( $masters ){
-				$code=traiteRelaisMasters($res , $swimmers , $agegroup );
-
-				}
-				else {
-				$code= traiteRelais($res , $swimmers , $agegroup  );	
+				if( $masters ) {
+					$code=traiteRelaisMasters($res , $swimmers , $agegroup , $resultats );
+				} else {
+					$code= traiteRelais($res , $swimmers , $agegroup ,$resultats  );	
 				}
 		
-		if( $code === false ) {
-			traiteNage($res , $swimmers , $codenages  );
-								}
+				if( $code === false ) {
+					traiteNage($res , $swimmers , $codenages , $resultats  );
+				}
 
-		
-		
 		}
 
-	
 
-return $resultats;
+
+return $resultats ;
+
+
 }
 
 	
-//////////////////////////////////////////////////////////
-print_r( $resultats );
-
-
-?>
-<label><?php echo $compet["city"] ?> : <?php echo $compet["name"] ?>&nbsp;&nbsp;(<?php echo $compet["bassin"] ?> m)</label>
-<br></br>
-
-<?  return ;?>
-<table>
-<thead><tr>
-<td>Nom -Prenom</td><td>Sexe</td><td>Age</td><td>Origine</td><td>Nage</td><td>Distance</td><td>Temps</td><td>Perfs!</td></tr></thead>
- <?php 
- 
-include 'getrecords.php'; 
- 
-
-
- $i=0;
- $max=18;
- 
-$bassin=$compet["bassin"];
-$lieu=$compet["city"];  
-$date=$compet["startdate"]; 
-
-
-
-//////////////////////////////////////////////////////
-
- foreach ( $resultats  as  $value  ) {
-
- 	
-
- 	
- 	 $sexe=$value["sexe"];
- 	 $distance=$value["distance"];
- 	 $nage=$value["nage"];
- 	 $age=$value['age'];
- 	 $time=$value["temps"];
- 	 $nom=$value["nom"];
- 	 $prenom=$value["prenom"];
- 	 $points=$value["points"];
- 	 
- 	 
- 	
- 	 
- 	 $inter=$value["inter"];
- 	  $oricol="";$refnage="-";
- 	 if( $inter == "1") { 
- 	 			$refnage=$value["ref"]; 
-	          	$oricol="style='background-color:yellow'";
- 	     				}
-	
-     $debk=$sexe."_".$bassin."_".$nage."_".$distance;
-
-
-
-
-$ok="";
-
-//age masters
-  if( strpos($age,"C") !== false ) {
-  	$age=str_replace("C","",$age);
-  	$max=$age;
-  	$master=true;
-  }
-// age relais masters
-  else if ( strpos($age,"R") !== false ) {
-  	$age=str_replace("R","",$age);
-  	$max=$age;
-  	$master=true;
- 	
-  }
-  
-  
-else {
-	$max=18;
-	$master=false;
-}
-  
-for  ($a=$age ; $a <=$max ; $a++   )
-
-					{
-						if( $master )   {   $key=$debk."_C".$a;
-							  	    $key2=$debk."_18";
-							   	    $ta="C".$a; 
-								    $tabkey=array();
-								    $tabkey[$key2]=18;
-								    $tabkey[$key]=$ta;
-											//les relais
-							       if( strpos($debk,"4x") !== false  || 
-								strpos($debk,"10x") !== false
-								)
-							    	{
-								  	$key=$debk."_R".$a;$ta="R".$a; 
-								  	$tabkey=array();
-									$tabkey[$key]=$ta;
-								
-							 	}	
-			
-			 				          }
-								     else {    $key=$debk."_".$a; $ta=$a;
-					 						   $tabkey=array();
-											   $tabkey[$key]=$ta;
-										  }				 	
-			
-			
-			
-			foreach ($tabkey as $key => $ta  ) {
-				
-			$pce=$lieu."_".$nom."_".$prenom."_".$date."_".$time."_".$points;
-			$pce=$key."_".$pce;
-			
-			$uid=uniqid();
-			 
-			if( isset( $getrecords[$key] ) ) {
-			$rec_time=$getrecords[$key]['temps'] ;
-			$ok.="";
-	       
-	    
-			
-			if( $time < $rec_time ) {$ok.="<label style='font-weight:bold;background-color:red;color:white'   id='$uid'  onClick=\"javascript:setPceRecords( '$pce' ,'$uid'  )\" >$ta [$rec_time]</label>&nbsp;";	 }
-         	
-         	else if( $time == $rec_time ) {
-         	$ok.="<label style='font-weight:bold;background-color:green;color:white'   id='$uid'  onClick=\"javascript:setPceRecords( '$pce' ,'$uid'  )\" >$ta [$rec_time]</label>&nbsp;";	
-         	//$ok.= $time." ".$rectime." ";
-         	}
-         	
-			}
-         	
-			else {
-			$rec_time=-1;
-
-			$ok.="<label style='font-weight:bold;background-color:red;color:white' id='$uid' onClick=\"javascript:setPceRecords( '$pce' ,'$uid'  )\" > $ta [-1]</label>&nbsp;";	
-				
-			}	
-			}
-				 
-					
-				 
-					}
-
-			
-
-
- if ($i%2 === 1) 
-echo "<tr class=\"odd\" ><td>".$nom." ".$prenom."</td><td>".$sexe."</td><td>".$age."</td><td $oricol >".$refnage."</td><td>".$nage."</td><td>".$distance."</td><td>".$time."</td><td>".$ok."</td></tr>"	;
-else 				 	
-echo "<tr><td>".$nom." ".$prenom."</td><td>".$sexe."</td><td>".$age."</td><td $oricol >".$refnage."</td><td>".$nage."</td><td>".$distance."</td><td>".$time."</td><td>".$ok."</td></tr>"	;			 	
- 	
- $i++;				 	
-				
-	
- }
- 	
 
 
 
 
 ?>
-</table>
-
 
 
