@@ -203,8 +203,8 @@ function getEngagements($id) {
 	$resultat['compet'] = $dcompet ;	
 	$resultat['engage'] = array_values($rows) ;
 
-	echo  json_encode($resultat ,JSON_NUMERIC_CHECK );
-	//	echo  json_encode(array_values($rows),JSON_NUMERIC_CHECK );
+	//echo  json_encode($resultat ,JSON_NUMERIC_CHECK );
+	echo  json_encode(array_values($rows),JSON_NUMERIC_CHECK );
 		
 }
 

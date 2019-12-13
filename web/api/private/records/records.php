@@ -68,7 +68,7 @@ function getCompet() {
 	
 	
 	
-	$query = "SELECT id,nom,debut,fin  FROM $tcompetitions WHERE verif='1' AND fin <= NOW()  ORDER BY debut, fin ";
+	$query = "SELECT id,nom,debut,fin  FROM $tcompetitions WHERE fin <= NOW()  ORDER BY debut, fin ";
 	
 		
 	$result = $mysqli->query( $query ) ;
@@ -401,18 +401,19 @@ function traiteFfnex( $filename) {
 
   $resultats = getResultats($xml, $isecn, $codenages, $swimmers, $master );
 
+
 usort($resultats, function ($item2, $item1) {
 	if ( $item2['nom'] !== $item1['nom'] ) {
-		return $item2['nom'] <=> $item1['nom'];
+		return $item2['nom'] - $item1['nom'];
 	} else if ( $item2['prenom'] !== $item1['prenom'] ) {
-		return $item2['prenom'] <=> $item1['prenom'];
+		return $item2['prenom'] - $item1['prenom'];
 	} else if ( $item2['sexe'] !== $item1['sexe'] ) {
-			return $item2['sexe'] <=> $item1['sexe'];}
+			return $item2['sexe'] - $item1['sexe'];}
 	else if ( $item2['nage'] !== $item1['nage'] ) {
-		return $item2['nage'] <=> $item1['nage'];
+		return $item2['nage'] - $item1['nage'];
 	}  if ( $item2['distance'] !== $item1['distance'] ) {
-		return $item2['distance'] <=> $item1['distance'];
-	} else return $item2['distance'] <=> $item1['distance'];
+		return $item2['distance'] - $item1['distance'];
+	} else return $item2['distance'] - $item1['distance'];
    
 });
 
