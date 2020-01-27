@@ -28,7 +28,7 @@ switch ($method) {
 ///////////////////////////////////////////////////////////////
 function sendAttestation($id) {
 	global $mysqli;
-	global $tlicencies_encours,$saison_enc;
+	global $tlicencies_encours,$saison_enc,$president;
 	
 	$query = "SELECT *  FROM $tlicencies_encours WHERE id = '$id' ";
 	
@@ -66,7 +66,7 @@ echo json_encode( $message );
 
 
 function send_attestation ( $data ) {
-	global $dev,$dev_email,$saison_enc;
+	global $dev,$dev_email,$saison_enc,$president;
 	
 
 	$nom = $data['nom'];
@@ -87,7 +87,7 @@ function send_attestation ( $data ) {
         $to=$v;
 	
 	
-  	$pdf=doPdf($nom,$prenom,$date,$cotisation,$saison_enc);
+  	$pdf=doPdf($nom,$prenom,$date,$cotisation,$saison_enc,$president);
 	$pdf->setCompression(true);
 	// clé aléatoire de limite
 	$boundary = md5(uniqid(microtime(), TRUE));

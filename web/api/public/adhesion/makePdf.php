@@ -2,7 +2,6 @@
 require_once('../fpdf/fpdf.php'); 
 require_once('../fpdf/fpdi.php'); 
      
-include '../common/rappel_texte.php' ;
 
 
 function makepdf( $data  )
@@ -12,7 +11,7 @@ function makepdf( $data  )
     // add a page 
 	$pdf->AddPage(); 
 	// set the sourcefile 
-	$pdf->setSourceFile('../common/modele.pdf'); 
+	$pageCount = $pdf->setSourceFile('../common/modele.pdf'); 
 	// import page 1 
 	$tplIdx = $pdf->importPage(1); 
 	// use the imported page and place it at point 10,10 with a width of 100 mm 
@@ -55,7 +54,7 @@ function makepdf( $data  )
     $pdf->SetXY(110, 148.5);$pdf->Write(0, $data->type);
 	
 	
-       $pdf->addPage(); 
+        $pdf->addPage(); 
 	 	$tplIdx = $pdf->importPage(2); 
 	    $pdf->useTemplate($tplIdx,0,0,210,297);
 
@@ -70,22 +69,15 @@ function makepdf( $data  )
 	 	$pdf->SetXY(32, 87 );$pdf->Write(0,  $data->adresse );
 	    $pdf->SetXY(32, 92 );$pdf->Write(0, $data->cp ." ".$data->ville);
 	    $pdf->SetXY(142, 101);$pdf->Write(0, $date);   
-	    
-	    $pdf->addPage(); 
-	 	$tplIdx = $pdf->importPage(4); 
-	    $pdf->useTemplate($tplIdx,0,0,210,297);
-	   	    
-	    $pdf->addPage(); 
-	 	$tplIdx = $pdf->importPage(5); 
-	    $pdf->useTemplate($tplIdx,0,0,210,297);
-       
-        $pdf->addPage(); 
-	 	$tplIdx = $pdf->importPage(6); 
-        $pdf->useTemplate($tplIdx,0,0,210,297);
         
-        $pdf->addPage(); 
-	 	$tplIdx = $pdf->importPage(7); 
-	    $pdf->useTemplate($tplIdx,0,0,210,297);
+        for ($pageNo = 4; $pageNo <= $pageCount; $pageNo++) {
+
+            $pdf->addPage(); 
+            $tplIdx = $pdf->importPage($pageNo); 
+            $pdf->useTemplate($tplIdx,0,0,210,297);
+            
+        }
+	   
 	    
 	    
         $pdf->setCompression(true); 
@@ -94,16 +86,42 @@ function makepdf( $data  )
 
 }
 
+/////////////////////////////////////////////////////////////////////////////////////////
+function getRappel() {
+    global $mysqli;
 
+    $query ="SELECT data  FROM  messages_texte where type='rappel' AND mode ='last'  ";
+
+    $result = $mysqli->query($query) ;
+    if (!$result) {
+        ($dev) ? $err=$mysqli->error : $err="invalid request";
+        setError( $err );
+        return ;
+    }
+
+    $r = $result->fetch_assoc() ;
+    $data = utf8_encode( $r['data'] ) ;
+    
+    $mysqli->close();
+    return $data ;
+
+}
 	
 ////////////////////////////////////////////////////////////////////////////////////////
 
 function sendmailpdf( $data  )	{
- global $dev , $dev_email ;  
+ global $dev , $dev_email , $saison_enc, $dateforum  ;  
  global $saison_enc; 
 
 $pdf = makepdf($data);    
-$rappel = getRappel();
+$txtbody = getRappel();
+
+$old = array("#SAISON_ENC","#DATEFORUM");
+$new = array($saison_enc, $dateforum );
+$rappel = str_replace($old, $new, $txtbody);
+
+
+
 
 //$from = "ECN natation <inscription@ecnatation.org>";
 $subject = "[Club de Natation] Confirmation de pre-inscription : ". strtoupper($data->nom) ." ".  ucfirst(strtolower($data->prenom)  );

@@ -1,6 +1,5 @@
 <?php
 include 'config.mailto.php';
-include '../common/texte_nouveau_inscriptions.php';
 
 
 $auth= array("admin","user","ent");
@@ -166,16 +165,50 @@ function sendMail($to,$from,$subject,$body) {
 	return $success;
 	
 }
+//////////////////////////////////////////////////////////////////////////////////////////////
+function getTexte() {
+    global $mysqli, $saison_enc, $dateforum, $urlpublic ;
+   
+	$urlins = 	$urlpublic ."?adhesion" ;
 
+    $query ="SELECT data  FROM  messages_texte where type='nouveau' ";
+	
+
+    $result = $mysqli->query($query) ;
+    if (!$result) {
+        ($dev) ? $err=$mysqli->error : $err="invalid request";
+        setError( $err );
+        return ;
+    }
+
+    $r = $result->fetch_assoc() ;
+   
+    $data = utf8_encode( $r['data'] ) ;
+	
+	$old = array("#SAISON_ENC","#URLINS","#DATEFORUM");
+	$new = array($saison_enc , $urlins ,$dateforum );
+	$txtbody = str_replace($old, $new, $data);
+	
+
+
+
+
+    return $txtbody ;
+    
+    
+}
 ////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 function getDatas() {
 	
 	global $from,$group;
 	global $tlicencies;
 	global $dev,$mysqli;
-	global $message_html ;
+
 	global $from ;
 	global $group ;
+
+
+	$message_body = getTexte();
 
 	
 	$query = "SELECT id,nom,prenom,categorie ,rang,officiel  FROM ".$tlicencies." WHERE valide='1'  ORDER BY nom, prenom ";
@@ -219,7 +252,7 @@ function getDatas() {
 	$datas['comp']=$res;
 	$datas['from']=$from;
 	$datas['group']=$group;
-	$datas['ins']=$message_html;
+	$datas['ins']=$message_body;
 	
 	
 	echo json_encode($datas);

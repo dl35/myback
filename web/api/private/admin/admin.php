@@ -1,7 +1,5 @@
 <?php
 include '../common/fonctions_categories.php' ;
-include '../common/texte_inscriptions.php' ;
-
 
 $auth= array("admin");
 
@@ -33,7 +31,18 @@ switch ($method) {
                 }
         else if( $id === 'params' ) {
          getParams();
-                }                
+                }     
+        else if( $id === 'rappel' ) {
+          getTexte('rappel');
+                }     
+        else if( $id === 'nouveau' ) {
+          getTexte('nouveau');
+                }     
+        else if( $id === 'ancien' ) {
+            getTexte('ancien');
+                }     
+                                                       
+                
         break;
     case 'PUT':
         $data = json_decode(file_get_contents('php://input'));
@@ -43,6 +52,24 @@ switch ($method) {
         
 	    break;    
     case 'POST':
+        if( !isset($id) ) {
+			setError( "invalid id");
+			return;
+        }
+        if( $id === 'upload' ) { 
+            upload( $_FILES );
+            return;
+		}
+
+        $body = json_decode(file_get_contents('php://input'));
+        
+        if( !isset($body) ) {
+			setError( "invalid post data");
+			return;
+        }
+     
+        
+          saveTexte( $body , $id );
    	    break;
 	case 'DELETE':
 		if( !isset($id) ) {
@@ -55,8 +82,113 @@ switch ($method) {
 		setError( "invalides routes");
 		break;
 		
+    }
+////////////////////////////////////////////////////////////////////////////////////
+function upload( $file ) {
+	
+	$taille_maxi = 6000000;
+	$taille = filesize($file['file']['tmp_name']);
+	$extensions = array('.pdf');
+	$extension = strrchr($file['file']['name'], '.');
+	
+	
+	if(!in_array($extension, $extensions)) //Si l'extension n'est pas dans le tableau
+	{
+		$message = 'Vous devez uploader un fichier de type pdf';
+		setError( $message );
+		return;
+	}
+	if($taille>$taille_maxi)
+	{
+		$message= 'Le fichier est trop gros...';
+		setError( $message);
+		return;
+	}
+
+    /* Getting file name */
+	$filename = $file['file']['tmp_name'];
+	if ( !file_exists($filename)) {
+		$message = "Erreur upload  fichier temporaire";
+		setError( $message );
+		return;
+	} 
+
+
+// mode developpement
+// chmod -R o+rw upload
+
+	/* Location */
+	//$location =  "/var/www/html/upload/" .  $file["file"]["name"] ;
+
+	//$location =  $_SERVER["DOCUMENT_ROOT"] . "/upload/" .  $file["file"]["name"] ;
+    $location =  $_SERVER["DOCUMENT_ROOT"] . "/api/common/" .  $file["file"]["name"] ;
+	/* Upload file */
+	$ret = move_uploaded_file($file['file']['tmp_name'],$location );
+	if( $ret ) {
+		$message = "upload: OK ".$location;
+		setSuccess( $message );
+	} else {  
+		$message = "Erreur upload ".$location ;
+		setError( $message );
+		return;
+	}
+
+	
+	
+}    
+////////////////////////////////////////////////////////////////////////////////////
+function saveTexte( $obj , $type ){
+   global $mysqli;
+
+  $query ="REPLACE INTO messages_texte ( type , data ) VALUES (?,?) ";
+  
+  $params[]= $type ;
+  $params[]= utf8_decode( $obj->body ) ;
+  $start = "ss";
+
+  $stmt = $mysqli->prepare( $query );
+  $stmt->bind_param( $start  ,...$params );
+  $result = $stmt->execute();
+   if (!$result) {
+        ($dev) ? $err=$mysqli->error : $err="invalid request";
+        setError( $err );
+        return ;
+    }
+
+  $mysqli->close();
+  header("Content-type:application/json");
+  echo json_encode( 'ok' );
+
 }
 
+////////////////////////////////////////////////////////////////////////////////////
+function getTexte( $type , $json=true ) {
+    global $mysqli;
+   
+
+    $query ="SELECT data  FROM  messages_texte where type='$type'   ";
+	
+
+    $result = $mysqli->query($query) ;
+    if (!$result) {
+        ($dev) ? $err=$mysqli->error : $err="invalid request";
+        setError( $err );
+        return ;
+    }
+
+    $r = $result->fetch_assoc() ;
+   
+    $data = utf8_encode( $r['data'] ) ;
+       
+    if( $json ) {
+        $mysqli->close();
+        header("Content-type:application/json");
+        echo json_encode( $data );
+    } else {
+        return $data ;
+    }
+    
+}
 ////////////////////////////////////////////////////////////////////////////////////
 function getParams() {
     global $mysqli;
@@ -236,6 +368,10 @@ function sendInscriptions() {
     global $tlicencies_encours ;
     global $dev,$mysqli ;
     
+    // texte_inscription 
+    $texte_inscription =  getTexte( 'ancien'  , false ) ;
+
+
 
     $query = "SELECT * FROM $tlicencies_encours WHERE "
                 ." categorie IS NOT NULL AND  date_inscription IS NULL "
@@ -272,7 +408,7 @@ function sendInscriptions() {
         $nom=$r['nom'];
         $prenom=$r['prenom'];
         if( empty($email)  ) continue;
-        $success = envoyer_mail( $nom, $prenom, $key, $email  );
+        $success = envoyer_mail( $nom, $prenom, $key, $email , $texte_inscription  );
         if ( $success ) $nb++ ;
         else $error++;    
 
@@ -302,13 +438,21 @@ function splitemail($email){
 
 }
 /////////////////////////////////////////////////////////////////////////////////
-function envoyer_mail( $nom, $prenom, $key, $email  ) {
-        global $dev,$dev_email,$saison_enc;
-      
+function envoyer_mail( $nom, $prenom, $key, $email , $texte_inscription  ) {
+        global $dev,$dev_email,$saison_enc,$dateforum,$urlpublic ;
+             			
+        $urldesin = "http://www.ecnatation.org/api/public/scripts/delete.php?key=".$key;
+        $urlins = 	$urlpublic ."?adhesion/".$key;
       
         $message  ="<html><head>";
         $message .="<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" /></head><body>";
-        $message .=getMessageInsciption($nom,$prenom,$key);
+        
+        $txtbody = $texte_inscription ;
+        $old = array("#NOM","#PRENOM","#SAISON_ENC","#URLINS","#URLDESIN","#DATEFORUM");
+        $new = array( $nom , $prenom , $saison_enc , $urlins ,$urldesin , $dateforum );
+        $txtbody = str_replace($old, $new, $txtbody);
+        
+        $message .= $txtbody;
 
         $message .="</body></html>";       
 
