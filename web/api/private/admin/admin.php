@@ -215,7 +215,7 @@ function getParams() {
     $r['tlicencies_last'] = utf8_encode( $r['tlicencies_last'] ) ;
     $r['tlicencies'] = utf8_encode( $r['tlicencies'] ) ;
     
-   
+    $r['president'] = utf8_encode( $r['president'] ) ;
 
     unset($r['id']);
 
@@ -237,6 +237,10 @@ function addParams($obj) {
 		
 	$set .= ",dev_email=?" ;
 	$params[]= utf8_decode( $obj->dev_email ) ;
+    $start .= "s";
+    
+    $set .= ",president=?" ;
+	$params[]= utf8_decode( $obj->president ) ;
 	$start .= "s";
 
 	$set .= ",saison_enc=?" ;
@@ -296,7 +300,8 @@ function validateParams($json) {
 	if ( ! array_key_exists('dateforum', $json) ) return false ;
 	if ( ! array_key_exists('tlicencies_encours', $json) ) return false ;
 	if ( ! array_key_exists('tlicencies_last', $json) ) return false ;
-	if ( ! array_key_exists('tlicencies', $json) ) return false ;
+    if ( ! array_key_exists('tlicencies', $json) ) return false ;
+    if ( ! array_key_exists('president', $json) ) return false ;
 	
 	
 	return true;
@@ -306,9 +311,9 @@ function addTest() {
 	global $dev, $dev_email, $mysqli;
 	global $tlicencies_encours;
     
-    $nom = "test";
-	$prenom = "test";
-	$adresse = "adresse de test";
+    $nom = "testecn35";
+	$prenom = utf8_decode("éssai");
+	$adresse = "adresse de testecn35";
     $ville = "Noyal Chatillon sur seiche";
     $cp = "35230";
     $sexe= "H";
@@ -321,7 +326,7 @@ function addTest() {
     $tel="0600000032,0600000033,0600000034";
     $email= $dev_email;
 
-	$idlic = "TEST1234";
+	$idlic = "TEST0000";
 	
     $inscription = "1" ;
 	
@@ -350,8 +355,8 @@ function delTest() {
     global $dev,$mysqli;
     global $tlicencies_encours;
     
-    $idlic = "TEST1234";
-    $query ="DELETE FROM  $tlicencies_encours  WHERE id = '$idlic' ";
+    
+    $query ="DELETE FROM  $tlicencies_encours  WHERE nom = 'testecn35' ";
 	
 	$result = $mysqli->query( $query ) ;
 	if (!$result ) {
@@ -381,7 +386,7 @@ function sendInscriptions() {
     if ( $dev ) {
         $query = "SELECT * FROM $tlicencies_encours WHERE "
                  ." categorie IS NOT NULL  "
-                 ."  AND (  nom = 'test' )  ORDER BY id  "; 
+                 ."  AND (  nom = 'testecn35' )  ORDER BY id  "; 
        
        /*          $query = "SELECT * FROM $tlicencies_encours WHERE "
                  ." categorie IS NOT NULL  "
@@ -468,6 +473,8 @@ function envoyer_mail( $nom, $prenom, $key, $email , $texte_inscription  ) {
               
         $headers .= "Content-Type: text/html; charset=\"utf-8\"";
         $headers .='Content-Transfer-Encoding: 8bit';
+
+ 
 
         $subject ="[Club de Natation] Inscription  $saison_enc : ".$prenom." ".$nom;
        

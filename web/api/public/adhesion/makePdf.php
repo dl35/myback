@@ -61,7 +61,8 @@ function makepdf( $data  )
         $pdf->addPage(); 
 	 	$tplIdx = $pdf->importPage(3); 
 	    $pdf->useTemplate($tplIdx,0,0,210,297);
-	    $pdf->SetXY(25, 73);
+     
+        $pdf->SetXY(25, 73);
 	    $pdf->Write(0,  $data->nom );
 		$pdf->SetXY(125, 73);
 	    $pdf->Write(0,  $data->prenom );
@@ -90,7 +91,7 @@ function makepdf( $data  )
 function getRappel() {
     global $mysqli;
 
-    $query ="SELECT data  FROM  messages_texte where type='rappel' AND mode ='last'  ";
+    $query ="SELECT data  FROM  messages_texte where type='rappel'  ";
 
     $result = $mysqli->query($query) ;
     if (!$result) {
@@ -100,10 +101,10 @@ function getRappel() {
     }
 
     $r = $result->fetch_assoc() ;
-    $data = utf8_encode( $r['data'] ) ;
+    $rappel = utf8_encode( $r['data'] ) ;
     
     $mysqli->close();
-    return $data ;
+    return $rappel ;
 
 }
 	
@@ -114,6 +115,8 @@ function sendmailpdf( $data  )	{
  global $saison_enc; 
 
 $pdf = makepdf($data);    
+
+
 $txtbody = getRappel();
 
 $old = array("#SAISON_ENC","#DATEFORUM");
@@ -121,60 +124,39 @@ $new = array($saison_enc, $dateforum );
 $rappel = str_replace($old, $new, $txtbody);
 
 
-
-
-//$from = "ECN natation <inscription@ecnatation.org>";
-$subject = "[Club de Natation] Confirmation de pre-inscription : ". strtoupper($data->nom) ." ".  ucfirst(strtolower($data->prenom)  );
-$attachment = chunk_split(base64_encode($pdf->Output("inscription.pdf",'S')));
-// clé aléatoire de limite
 $boundary = md5(uniqid(microtime(), TRUE));
 
-$headers  = "MIME-Version: 1.0\r\n";
+//$from = "ECN natation <inscription@ecnatation.org>";
+$subject = "[Club de Natation] Confirmation de pre-inscription : ". strtoupper(utf8_encode($data->nom) ) ." ".  ucfirst(strtolower(utf8_encode($data->prenom) ) );
+
+
+$headers = "MIME-Version: 1.0\r\n";
 $headers .= "X-Sender: <www.ecnatation.org>\r\n";
 $headers .= "X-Mailer: PHP\r\n";
 $headers .= "X-auth-smtp-user: webmaster@ecnatation.org\r\n";
 $headers .= "X-abuse-contact: webmaster@ecnatation.org\r\n";
-$headers .= "Reply-to: ECN natation  <inscription@ecnatation.org>\r\n"; 
+$headers .= "Reply-to: ECN natation  <inscription@ecnatation.org>\r\n";
 $headers .= "From: ECN natation <inscription@ecnatation.org>\r\n";
 $headers .= "Bcc:ecninscription@gmail.com\r\n";
 $headers .= 'Content-Type: multipart/mixed;boundary='.$boundary."\r\n";
-
 $headers .= "\r\n";
-
-
 
 // Message
 $msg = 'Texte affiché par des clients mail ne supportant pas le type MIME.'."\r\n\r\n";
 
 // Message HTML
 $msg .= '--'.$boundary."\r\n";
-
 $msg .= "Content-Type: text/html; charset=\"utf-8\"\r\n\r\n";
 
-/*
-$msg .= "<div>Bonjour ,<br><br>";
-$msg .="Merci d'avoir validé votre pré-inscription au club Espérance Chartres de Bretagne Natation pour la $saison_enc. </br>"; 
-// $msg .="<p>Vous devez maintenant <strong>imprimer le fichier inscription.pdf</strong> en pièce jointe,<strong>le signer et le déposer accompagné de votre règlement</strong>, dans la boite aux lettres du club, dans le hall de la piscine de la Conterie.</p>";
-$msg .="<p>Pour mémoire, le fichier <strong> inscription.pdf </strong> contient les documents suivants :</p>";
-$msg .="<ul>";
-$msg .="<li>le dossier d'inscription : à signer</li>";
-$msg .="<li>l'autorisation parentale : à compléter  pour les adhérents mineurs</li>";
-$msg .="<li>la fiche de liaison médicale : à compléter</li>";
-$msg .="<li>le réglement intèrieur : à lire et à signer</li>";
-$msg .="</ul>";
-*/
-
 $msg .= $rappel ;
+$msg .= "\r\n";
 
-/*
-$msg .="Pour toute question sur l'inscription au club, veuillez envoyer un email à l'adresse inscription@ecnatation.org </br>";
-$msg .="Sportivement<br>--<br>Le bureau de l'association<br>Web : http://ecnatation.fr </div>\r\n";
-*/
 
-$content = chunk_split(base64_encode($pdf->Output("inscription.pdf","S") ));
+
+$content = chunk_split(base64_encode($pdf->Output("adhesion.pdf","S") ));
 $msg .= '--'.$boundary."\r\n";
 
-$msg .= 'Content-type:application/octet-stream;name=inscription.pdf'."\r\n";
+$msg .= 'Content-type:application/octet-stream;name=adhesion.pdf'."\r\n";
 $msg .= 'Content-transfer-encoding:base64'."\r\n\r\n";
 $msg .= $content."\r\n";
 $msg .= '--'.$boundary."\r\n";

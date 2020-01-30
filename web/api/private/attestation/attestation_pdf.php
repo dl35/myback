@@ -16,7 +16,7 @@ $prenom =  utf8_decode("Prénom: ").$prenom  ;
 $date = "Date de Naissance: ".$date ;
 
 
-$texte1=utf8_decode("Je soussigné(e), $president, Président(e) de l'association Espérance" );
+$texte1=utf8_decode("Je soussigné(e), "). utf8_decode($president) .utf8_decode(" Président(e) de l'association Espérance" );
 $texte2=utf8_decode("Chartres de Bretagne Natation (N° Jeunesse et Sports : 0135 S80)");
 $texte3=utf8_decode("certifie que :");
 
@@ -31,13 +31,14 @@ if ( $cotisation == 0  ) {
 
 ////////////////////////////////////////////////////////////////
 
-    $folder = realpath(dirname(__FILE__));
+    // $folder = realpath(dirname(__FILE__));
 	// initiate FPDI 
 	$pdf = new FPDI(); 
 	// add a page 
 	$pdf->AddPage(); 
 	// set the sourcefile 
-	$pdf->setSourceFile($folder.'/attestation.pdf'); 
+	//$pdf->setSourceFile($folder.'/attestation.pdf'); 
+	$pdf->setSourceFile('../common/attestation.pdf'); 
 	// import page 1 
 	$tplIdx = $pdf->importPage(1); 
 	// use the imported page and place it at point 10,10 with a width of 100 mm 

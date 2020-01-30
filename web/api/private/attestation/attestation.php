@@ -70,7 +70,7 @@ function send_attestation ( $data ) {
 	
 
 	$nom = $data['nom'];
-	$prenom = $data['prenom'];
+	$prenom = $data['prenom'] ;
 	$cotisation = $data['cotisation'];
 	$date = $data['date'];
     $email = $data['email'];
@@ -92,6 +92,10 @@ function send_attestation ( $data ) {
 	// clé aléatoire de limite
 	$boundary = md5(uniqid(microtime(), TRUE));
 	
+
+	$prenom =utf8_encode( $prenom );
+	$nom =utf8_encode( $nom );
+
 	$subject ="[Club de Natation] Confirmation Inscription $saison_enc : ".$prenom." ".$nom;
 	
 	
