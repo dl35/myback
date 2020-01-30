@@ -6,6 +6,7 @@ services:
       - backend
     volumes:
       - ../web/:/var/www/html/ 
+      - ./php/ini/php.ini:/usr/local/etc/php/php.ini:ro
       - ./php/ssmtp/ssmtp.conf:/etc/ssmtp/ssmtp.conf:ro
       - ./php/mail/mail.ini:/usr/local/etc/php/conf.d/mail.ini:ro
   apache:
