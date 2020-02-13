@@ -356,7 +356,7 @@ function delTest() {
     global $tlicencies_encours;
     
     
-    $query ="DELETE FROM  $tlicencies_encours  WHERE nom = 'testecn35' ";
+    $query ="DELETE FROM  $tlicencies_encours  WHERE nom = 'testecn35' OR nom = 'testnew' ";
 	
 	$result = $mysqli->query( $query ) ;
 	if (!$result ) {
