@@ -210,7 +210,8 @@ function get($id=false) {
 		unset ( $r['confirmation_email'] );
 		unset ( $r['date_valide'] );
 		
-		
+		unset ( $r['nbre_chvac10'] );
+		unset ( $r['nbre_chvac20'] );
 		
 		
 		$e = json_encode( $r ) ;
@@ -669,7 +670,7 @@ function update($data) {
 		$start.="s";
 	}
 	
-	if ( isset( $data->nbre_chvac10 ) ) {
+/*	if ( isset( $data->nbre_chvac10 ) ) {
 		$set .= ",nbre_chvac10 = ? " ;
 		$params[]= $data->nbre_chvac10 ;
 		$start.="s";
@@ -688,6 +689,16 @@ function update($data) {
 		$params[]= NULL;
 		$start.="s";
 	}
+*/
+	if ( isset( $data->cheque_vac ) ) {
+		$set .= ",cheque_vac = ? " ;
+		$params[]= $data->cheque_vac ;
+		$start.="s";
+	} else {
+		$set .= ",cheque_vac = ? " ;
+		$params[]= NULL;
+		$start.="s";
+	}
 
 	if ( isset( $data->especes ) ) {
 		$set .= ",especes = ? " ;
@@ -701,8 +712,9 @@ function update($data) {
 		
 	if ( isset($data->ch_sport) ) { $total = $total + $data->ch_sport ; }
 	if ( isset($data->coup_sport) ) { $total = $total + $data->coup_sport ; }
-	if ( isset($data->nbre_chvac10) ) { $total = $total + $data->nbre_chvac10 *10 ; }
-	if ( isset($data->nbre_chvac20) ) { $total = $total + $data->nbre_chvac20 *20 ; }
+	// if ( isset($data->nbre_chvac10) ) { $total = $total + $data->nbre_chvac10 *10 ; }
+	// if ( isset($data->nbre_chvac20) ) { $total = $total + $data->nbre_chvac20 *20 ; }
+	if ( isset($data->cheque_vac) ) { $total = $total + $data->cheque_vac ; }
 	if ( isset($data->especes) ) { $total = $total + $data->especes ; }
 
 	
@@ -878,12 +890,20 @@ function invalide($data) {
 		$params[]= NULL;
 		$start.="s";
 		
-		$set .= ",nbre_chvac10 = ? " ;
+		/*$set .= ",nbre_chvac10 = ? " ;
 		$params[]= NULL;
 		$start.="s";
 		$set .= ",nbre_chvac20 = ? " ;
 		$params[]= NULL;
+		$start.="s";*/
+
+
+		$set .= ",cheque_vac = ? " ;
+		$params[]= NULL;
 		$start.="s";
+		
+
+
 		$set .= ",especes = ? " ;
 		$params[]= NULL;
 		$start.="s";
