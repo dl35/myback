@@ -93,7 +93,7 @@ function getCompetitions() {
 		 $id = $r['id'] ;
 		( isset( $map[$id] ) ) ?  $res['nb']=$map[$id]:$res['nb']=0;
 	
-		$datetime = new DateTime($r['fin'] .' 00:00:00');
+		$datetime = new DateTime($r['fin'] .' 24:00:00');
 		( $datetime >= $now ) ?  $res['next'] = true  : $res['next'] = false ;
 
 		
