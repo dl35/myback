@@ -314,7 +314,7 @@ function getCompetitions($id=false) {
 		$datetime = new DateTime($r['debut'] .' 00:00:00');
 		$r['debut']=$datetime->format(DateTime::ATOM);
 		
-		$datetime = new DateTime($r['fin'] .' 00:00:00');
+		$datetime = new DateTime($r['fin'] .' 24:00:00');
 		$r['fin']=$datetime->format(DateTime::ATOM);
 				
 		$datetime = new DateTime($r['limite'] .' 00:00:00');

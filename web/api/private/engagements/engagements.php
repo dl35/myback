@@ -541,7 +541,7 @@ function getCompetitions() {
 	
 	
 	
-	$query = "SELECT id,nom,lieu,debut,fin  FROM $tcompetitions WHERE verif='1' AND fin >= NOW()  ORDER BY debut, fin ";
+	$query = "SELECT id,nom,lieu,debut,fin  FROM $tcompetitions WHERE verif='1' AND fin >= NOW() - INTERVAL 1 DAY  ORDER BY debut, fin ";
 	
 		
 	$result = $mysqli->query( $query ) ;
