@@ -12,3 +12,6 @@ web/api/private/authentification.php
 web/api/public/routes.php
 
 web/api/private/records/traitement
+web/api/public/rss/ecn
+web/api/public/rss/ffn
+web/api/public/rss/rmc
