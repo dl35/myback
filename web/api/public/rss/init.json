@@ -1,6 +1,7 @@
 {
 "actif" : true ,
 "scenario" : [
+    { "name" :"ecn" , "url" :"/api/public/rss/ecn/ecn.json" , "logo" :"assets/logos/ecn.png" } ,
     { "name" :"ffn" , "url" :"/api/public/rss/ffn/ffn.json" , "logo" :"assets/logos/ffn.png" } ,
     { "name" :"rmc" , "url" :"/api/public/rss/rmc/rmc.json" , "logo" :"assets/logos/rmc.png"  } ,
     { "name" :"equipe" , "url" :"/api/public/rss/equipe/equipe.json" , "logo" :"assets/logos/equipe.png" } 

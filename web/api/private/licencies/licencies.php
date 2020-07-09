@@ -1011,7 +1011,7 @@ function delete($id) {
 function send_attestation ( $data , $email) {
 	
 	
-	global $dev,$dev_email,$saison_enc;
+	global $dev,$dev_email,$saison_enc,$president;
 	
 	
 	$nom = $data->nom;
@@ -1035,7 +1035,7 @@ function send_attestation ( $data , $email) {
 	}
 	
     // viens de attestation/attestation_pdf		 
-	$pdf=doPdf($nom,$prenom,$date,$cotisation,$saison_enc);
+	$pdf=doPdf($nom,$prenom,$date,$cotisation,$saison_enc,$president);
 	$pdf->setCompression(true);
 	
 	

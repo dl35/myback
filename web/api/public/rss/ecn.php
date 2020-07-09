@@ -20,11 +20,27 @@ $flux = "https://ecnatation.blogspot.com/feeds/posts/default/";
 
 
 
-$feed = file_get_contents( $flux );
-if ( empty($feed) ) {
-    echo "error";
-    exit(1) ;
+$ch = curl_init( $flux );
+curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 3);
+curl_setopt($ch, CURLOPT_TIMEOUT, 5);
+curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+$feed = curl_exec($ch);
+ 
+if( curl_errno($ch) ){
+  echo "error";
+  exit(1) ;
 }
+
+
+$xml ="<?xml version='1.0' encoding='UTF-8'?>";
+
+$pos = strpos($feed , $xml ) ; 
+if( $pos === false )   {
+  echo "error not xml ";
+  exit(1) ;
+} ;
+
+
 
 
 $rss = simplexml_load_string($feed);
@@ -43,7 +59,7 @@ if( $r == false ) {
   exit(1) ;
 }
 
-$updated = $rss->updated ;
+$updated = (string) $rss->updated ;
 
 $i = 0 ;
 
@@ -56,14 +72,12 @@ foreach($t as $n  ) {
     $d['date'] = (string ) ( $n->published ) ;
     $d['title'] = (string ) ( $n->title ) ;
  
-    echo "********\n\n";
     $content = "" ;
     $cont=(string) ( $n->content );
     $content = str_replace("&nbsp;", "" , $cont );
-    $content = strip_tags($content,"<a>");
+    $content = strip_tags($content,"<a><p><br>");
  
 
- 
 
     $htmlDom = new DOMDocument;
  
@@ -75,58 +89,51 @@ foreach($t as $n  ) {
    
     $first =true ;
     foreach($links as $link){
-    
-        //Get the link text.
+      
         $linkText = $link->nodeValue;
-        //Get the link in the href attribute.
         $linkHref =  $link->getAttribute('href');
  
-        //If the link is empty, skip it and don't
-        //add it to our $extractedLinks array
         if(strlen(trim($linkHref)) == 0){
             continue;
         }
   
-        //Skip if it is a hashtag / anchor link.
         if($linkHref[0] == '#'){
             continue;
         }
-     
-        //Add the link to our $extractedLinks array.
+        /*
         $extractedLinks[] = array(
             'text' => $linkText,
             'href' => $linkHref
-        );
-     
+        );*/
         $img= $linkHref;
-     
-
-
       
         if ( !empty( $img ) ) {
         $filename_from_url = parse_url($img);
         $ext = pathinfo($filename_from_url['path'], PATHINFO_EXTENSION);
 
 
-      
-        if(getimagesize($img) == false)
-        {
-          echo "\n=== NOT IMG ===". $img ; 
-       
-          
-          continue;
-        } 
+        $cimg = curl_init( $img );
+        curl_setopt($cimg, CURLOPT_CONNECTTIMEOUT, 3);
+        curl_setopt($cimg, CURLOPT_TIMEOUT, 5);
+        curl_setopt($cimg, CURLOPT_RETURNTRANSFER, true);
+        $contentImg = curl_exec($cimg);
+        $contentType = curl_getinfo($cimg, CURLINFO_CONTENT_TYPE);
+        $pos = strpos( $contentType , "image") ;
+        if( $pos === false ) {
+          // echo $contentType ."\n";
+          continue ;
+        }
+
     
         if( $ext === "jpg" ||  $ext === "JPG" )  {
           $ext = "jpeg" ;
         }
 
 
-        $content2 = file_get_contents( $img );
         $rand = get_millis() ;
         $fname= $actu.$rand.'.'.$ext;
          $name= $dir .'/'.$fname;
-        $r = file_put_contents( $name , $content2);
+        $r = file_put_contents( $name , $contentImg);
         if( $r !== false ) {
           //  resize_img( $name , 200  ) ;
           if( $first ) {
@@ -148,28 +155,33 @@ foreach($t as $n  ) {
 
 }
 
- $content = preg_replace('/<a(.*?)href="TOTO"(.*?)>(.*?)<\/a>/' ,"",$content);
+  $content = preg_replace('/<a(.*?)href="TOTO"(.*?)>(.*?)<\/a>/' ,"",$content);
 
-  $d['description'] =  $content ; // = strip_tags($content);
-$datas[] = $d ;
+  $d['description'] =  $content ; 
+  $datas[] = $d ;
 }
 
 
 
-// print_r( $datas );
+$info =array();
+$info['title'] = "Actualité ECNatatation";
+$info['description'] = "Toute l'actualité du club";
+$info['copyright'] = "Copyright ecn";
+$info['lastdate'] = $updated ;
+$info['link'] = "http://www.ecnatation.org";
 
-// $res['channel'] =$info ;
-$res['items'] =$datas ;
+$res['channel'] = $info ;
+$res['items'] = $datas ;
+
+
 
 $fp = fopen($dir.'/'.$actu.'.json', 'w');
-
-
 fwrite($fp, json_encode($res));
 fclose($fp);
 
 
 
-
+//////////////////////////////////////////////////////////////////////////////////
 function deleteall() {
   global $dir ;
   $files = scandir($dir);
@@ -191,8 +203,7 @@ return $r ;
 
 
 
-
-
+////////////////////////////////////////////////////////////////////////////////////
 function get_millis(){
   list($usec, $sec) = explode(' ', microtime());
   return (int) ((int) $sec * 1000 + ((float) $usec * 1000));
