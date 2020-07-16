@@ -175,6 +175,15 @@ function get($id=false) {
 		
 		$r['carte']=utf8_encode($r['carte'] );
 
+		if ( !is_null( $r['date_certmedical']) &&  strlen($r['date_certmedical']) == 10 ) {
+			$datecert = $r['date_certmedical'] ;	
+			$y = substr( $datecert, 0, 4 );
+			$m = substr( $datecert, 5, 2 );
+			$d = substr( $datecert, 8, 2 );
+			$r['date_certmedical'] =$d."/".$m."/".$y ;
+
+		}
+	
 
 		$ttel=explode(",",$r['telephone'] );
 		$temail=explode(",",$r['email'] );
@@ -201,6 +210,12 @@ function get($id=false) {
 		
 		($r['paye'] == '1' ) ? $r['paye'] =true  : $r['paye'] =false ;
 		
+		if ($r['lic_ffn'] == '1' ) {
+			$r['lic_ffn'] =true ;
+		} else if ( $r['lic_ffn'] == '0' ) {
+			$r['lic_ffn'] =false ;
+		}
+			
 		
 		unset ( $r['telephone'] ) ;
 		unset ( $r['email'] ) ;
@@ -545,6 +560,35 @@ function update($data) {
 		$start.="s";
 	}
 
+	if ( isset( $data->lic_ffn ) ) {
+		$set .= ",lic_ffn = ? " ;
+		if( $data->lic_ffn ) {
+			$params[]= '1';
+		} else if( !$data->lic_ffn ) {
+			$params[]= '0';
+		}
+		$start.="s";
+	} else {
+		$set .= ",lic_ffn = ? " ;
+		$params[]= NULL;
+		$start.="s";
+	}
+
+	if ( isset( $data->date_certmedical ) &&  strlen($data->date_certmedical) === 10   ) {
+		$set .= ",date_certmedical = ? " ;
+		$d = substr ($data->date_certmedical, 0, 2 ) ;
+		$m = substr ($data->date_certmedical, 3, 2 ) ;
+		$y = substr ($data->date_certmedical, 6, 4 ) ;
+
+		$params[]= $y."-".$m."-".$d ;
+		$start.="s";
+	} else {
+		$set .= ",date_certmedical = ? " ;
+		$params[]= NULL;
+		$start.="s";
+	}
+
+
 	if ( isset( $data->banque ) ) {
 		$set .= ",banque = ? " ;
 		$params[]= $data->banque ;
@@ -741,6 +785,10 @@ function update($data) {
 		$params[]= '0';
 		$start.="s";
 	}
+
+
+
+
 
 	if ( isset( $data->auto_parentale ) &&  $data->auto_parentale  ) {
 		$set .= ",auto_parentale = ? " ;
@@ -943,6 +991,12 @@ function invalide($data) {
 		$start.="s";
 		$set .= ",inscription = ? " ;
 		$params[]= '-1';
+		$start.="s";
+		$set .= ",lic_ffn = ? " ;
+		$params[]= NULL ;
+		$start.="s";
+		$set .= ",date_certmedical = ? " ;
+		$params[]= NULL ;
 		$start.="s";
 
 		$set .= ",date_valide = ? " ;
