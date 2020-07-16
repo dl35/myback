@@ -18,7 +18,7 @@ if ( $mysqli->connect_errno ) {
 
 $query="SELECT * FROM $tlicencies_encours  WHERE  inscription = '1' ORDER BY nom,prenom ";
 
-$row=array('nom','prenom','sexe','date','adresse','code_postal','ville','email','telephone','type','officiel','entr','categorie','rang','licence','lic_ffn','date_certmedical','carte','num_carte','especes','banque','cheque1','cheque2','cheque3','num_cheque1','num_cheque2','num_cheque3','ch_sport','num_sport','coup_sport','num_coupsport','cheque_vac','cotisation' ,'tarif' ,'date_inscription','date_valide','valide');
+$row=array('nom','prenom','sexe','date','adresse','code_postal','ville','email','telephone','type','officiel','entr','categorie','rang','licence','ass_ffn','date_certmedical','carte','num_carte','especes','banque','cheque1','cheque2','cheque3','num_cheque1','num_cheque2','num_cheque3','ch_sport','num_sport','coup_sport','num_coupsport','cheque_vac','cotisation' ,'tarif' ,'date_inscription','date_valide','valide');
 $res = $mysqli->query($query) ;
 
 if (!$res) {

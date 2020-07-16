@@ -210,10 +210,10 @@ function get($id=false) {
 		
 		($r['paye'] == '1' ) ? $r['paye'] =true  : $r['paye'] =false ;
 		
-		if ($r['lic_ffn'] == '1' ) {
-			$r['lic_ffn'] =true ;
-		} else if ( $r['lic_ffn'] == '0' ) {
-			$r['lic_ffn'] =false ;
+		if ($r['ass_ffn'] == '1' ) {
+			$r['ass_ffn'] =true ;
+		} else if ( $r['ass_ffn'] == '0' ) {
+			$r['ass_ffn'] =false ;
 		}
 			
 		
@@ -560,16 +560,16 @@ function update($data) {
 		$start.="s";
 	}
 
-	if ( isset( $data->lic_ffn ) ) {
-		$set .= ",lic_ffn = ? " ;
-		if( $data->lic_ffn ) {
+	if ( isset( $data->ass_ffn ) ) {
+		$set .= ",ass_ffn = ? " ;
+		if( $data->ass_ffn ) {
 			$params[]= '1';
-		} else if( !$data->lic_ffn ) {
+		} else if( !$data->ass_ffn ) {
 			$params[]= '0';
 		}
 		$start.="s";
 	} else {
-		$set .= ",lic_ffn = ? " ;
+		$set .= ",ass_ffn = ? " ;
 		$params[]= NULL;
 		$start.="s";
 	}
@@ -992,7 +992,7 @@ function invalide($data) {
 		$set .= ",inscription = ? " ;
 		$params[]= '-1';
 		$start.="s";
-		$set .= ",lic_ffn = ? " ;
+		$set .= ",ass_ffn = ? " ;
 		$params[]= NULL ;
 		$start.="s";
 		$set .= ",date_certmedical = ? " ;
